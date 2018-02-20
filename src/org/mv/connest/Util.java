@@ -8,13 +8,14 @@ public class Util {
 	private String connMsg;
 	
 	private static String VERSION = "0.01";
-	private static String URL = "jdbc:postgresql://localhost:5432/connest";
+	private static String URL = "jdbc:mysql://asus-eee:3306/connest";
 	private static String USER = "connest";
 	private static String PASS = "connest";
 	
 	
 	public Connection getNewConnection() {
-		try(Connection c = DriverManager.getConnection(URL, USER, PASS)) {
+		try {
+			Connection c = DriverManager.getConnection(URL, USER, PASS);
 			connMsg = "Connection " + c.toString() + " established";
 			return c;
 		} catch(Exception e) {
@@ -22,7 +23,7 @@ public class Util {
 			connMsg = e.getMessage();
 			return null;
 		}
-	}
+	}	
 	
 	public static String getVersion() {
 		return VERSION;
