@@ -19,11 +19,27 @@ public class MainBean {
 	private Connection conn;
 	private String connMsg;
 	private Util util;
-	private ArrayList<Util> utils = new ArrayList<>();
+	private ArrayList<Connection> conns = new ArrayList<>();
 	
 	@PostConstruct
 	public void init() {
-		util = new Util();
+		util = new Util();		
+	}
+	
+	private void kill(int index) {
+		if(index > -1) {
+			try {
+				if(conns.get(index) != null) {
+					conns.get(index).close();
+					if(conns.get(index).isClosed()) addConnMsg("Connection killed");
+					conns.remove(index);				
+				}			
+				
+			} catch(SQLException sqle) {
+				System.out.println(sqle.getMessage());
+				sqle.printStackTrace();
+			}
+		}
 	}
 	
 	@PreDestroy
@@ -31,7 +47,7 @@ public class MainBean {
 		try {
 			if(!conn.isClosed()) {
 				conn.close();				
-				if(conn.isClosed()) addConnMsg("Connection killed");
+				if(conn.isClosed()) addConnMsg("Connection dastroyed");
 				conn = null;
 				util = null;
 			}			
@@ -72,16 +88,16 @@ public class MainBean {
 	}
 	
 	public void getConn() {
-		// create util
-		init();
-		conn = util.getNewConnection();
+		conns.add(util.getNewConnection());
 		addConnMsg(util.getConnMsg());
 		// insert into db
 		//sendTimestamp();
 	}
 	
 	public void killConn() {
-		destroy();
+		if(conns.size() >= 0) {
+			kill(conns.size() - 1);
+		}
 	}
 	
 	public String getConnMsg() {
