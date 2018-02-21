@@ -15,17 +15,22 @@ import java.util.Calendar;
 @ViewScoped
 public class MainBean {
 
-	// Just held open
-	private Connection conn;
-	private String connMsg;
+	private String connMsg = "";
 	private Util util;
-	private ArrayList<Connection> conns = new ArrayList<>();
+	private ArrayList<Connection> conns;
 	
 	@PostConstruct
 	public void init() {
-		util = new Util();		
+		util = new Util();
+		conns = new ArrayList<>();
 	}
 	
+	// kill last connection
+	public void kill() {
+		kill(conns.size() - 1);		
+	}
+	
+	// kill connection by index in connections
 	private void kill(int index) {
 		if(index > -1) {
 			try {
@@ -43,23 +48,17 @@ public class MainBean {
 	}
 	
 	@PreDestroy
-	public void destroy() {
-		try {
-			if(!conn.isClosed()) {
-				conn.close();				
-				if(conn.isClosed()) addConnMsg("Connection dastroyed");
-				conn = null;
-				util = null;
-			}			
-		} catch(SQLException sqle) {
-			System.out.println(sqle.getMessage());
-		}		
+	// cleanup
+	public void destroy() {		
+		conns = null;
+		util = null;
 	}
 	
 	private void addConnMsg(String msg) {
 		connMsg = connMsg + "\n" +  msg;
 	}
 	
+	/*
 	private boolean sendTimestamp() {
 		
 		Calendar calendar = Calendar.getInstance();
@@ -81,7 +80,7 @@ public class MainBean {
 		}
 	      
 	}
-	
+	*/
 	
 	public String getVersion () {
 		return Util.getVersion();
@@ -94,17 +93,13 @@ public class MainBean {
 		//sendTimestamp();
 	}
 	
-	public void killConn() {
-		if(conns.size() >= 0) {
-			kill(conns.size() - 1);
-		}
-	}
+	
 	
 	public String getConnMsg() {
 		return connMsg;
 	}
-	
+	/*
 	public Connection getDb() {
 		return conn;
-	}
+	}*/
 }

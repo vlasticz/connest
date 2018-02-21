@@ -13,8 +13,9 @@
 	<h:form style="float: right; margin-right: 40px; margin-top: 40px">
 		<p:commandButton value="Create connection" action="#{mainBean.getConn()}"></p:commandButton>
 		<br></br>
-		<p:commandButton value="Kill connection" action="#{mainBean.killConn()}"></p:commandButton>
+		<p:commandButton value="Kill connection" action="#{mainBean.kill()}"></p:commandButton>
 	</h:form>
 	<div style="white-space: pre-wrap">#{mainBean.connMsg}</div>
+	
 </body>
 </html>
