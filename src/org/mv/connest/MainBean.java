@@ -2,6 +2,7 @@ package org.mv.connest;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
@@ -49,7 +50,7 @@ public class MainBean {
 	
 	@PreDestroy
 	// cleanup
-	public void destroy() {		
+	public void destroy() {
 		conns = null;
 		util = null;
 	}

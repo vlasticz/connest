@@ -15,7 +15,7 @@
 		<br></br>
 		<p:commandButton value="Kill connection" action="#{mainBean.kill()}"></p:commandButton>
 	</h:form>
-	<div style="white-space: pre-wrap">#{mainBean.connMsg}</div>
+	<h:outputText value="#{mainBean.connMsg}" style="white-space: pre-wrap" />
 	
 </body>
 </html>
