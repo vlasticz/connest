@@ -15,14 +15,17 @@ import java.util.Calendar;
 @ManagedBean
 @ViewScoped
 public class MainBean {
-
-	private String connMsg = "";
-	private Util util;
+	
+	private Configuration conf;
 	private ArrayList<Connection> conns;
 	
+	public ArrayList<Connection> getConns() {
+		return conns;
+	}
+
 	@PostConstruct
 	public void init() {
-		util = new Util();
+		conf = new Configuration();
 		conns = new ArrayList<>();
 	}
 	
@@ -31,13 +34,20 @@ public class MainBean {
 		kill(conns.size() - 1);		
 	}
 	
+	// kill all connections
+	public void killAll() {
+		for(int i = conns.size() -1; i > -1; i--) {
+			kill(i);
+		}
+		conns.clear();
+	}
+	
 	// kill connection by index in connections
 	private void kill(int index) {
 		if(index > -1) {
 			try {
 				if(conns.get(index) != null) {
 					conns.get(index).close();
-					if(conns.get(index).isClosed()) addConnMsg("Connection killed");
 					conns.remove(index);				
 				}			
 				
@@ -52,11 +62,7 @@ public class MainBean {
 	// cleanup
 	public void destroy() {
 		conns = null;
-		util = null;
-	}
-	
-	private void addConnMsg(String msg) {
-		connMsg = connMsg + "\n" +  msg;
+		conf = null;
 	}
 	
 	/*
@@ -84,23 +90,12 @@ public class MainBean {
 	*/
 	
 	public String getVersion () {
-		return Util.getVersion();
+		return Configuration.getVersion();
 	}
 	
 	public void getConn() {
-		conns.add(util.getNewConnection());
-		addConnMsg(util.getConnMsg());
+		conns.add(conf.getNewConnection());		
 		// insert into db
 		//sendTimestamp();
 	}
-	
-	
-	
-	public String getConnMsg() {
-		return connMsg;
-	}
-	/*
-	public Connection getDb() {
-		return conn;
-	}*/
 }

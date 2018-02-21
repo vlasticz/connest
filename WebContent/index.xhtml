@@ -5,17 +5,35 @@
 			xmlns:h="http://xmlns.jcp.org/jsf/html"
 			xmlns:p="http://primefaces.org/ui">
 
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Connest</title>
-</head>
-<body>
-	<h:form style="float: right; margin-right: 40px; margin-top: 40px">
-		<p:commandButton value="Create connection" action="#{mainBean.getConn()}"></p:commandButton>
-		<br></br>
-		<p:commandButton value="Kill connection" action="#{mainBean.kill()}"></p:commandButton>
-	</h:form>
-	<h:outputText value="#{mainBean.connMsg}" style="white-space: pre-wrap" />
+	<h:head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		
+		<title>Connest</title>
+		
+		<link rel="stylesheet" type="text/css" href="main-default.css"></link>
+	</h:head>
+
+
+	<h:body>
 	
-</body>
+		<!-- dataList on the left -->
+		<h:form id="conn-list">
+			<div class="datalist-noborder">
+				<p:dataList class="menu-left" id="message" name="message" value="#{mainBean.conns}" var="conn" emptyMessage="">
+					<h:outputText value="#{conn.toString()}" style="border-style: double"></h:outputText>
+					<br /><br />
+				</p:dataList>
+			</div>
+		</h:form>
+		
+		<!-- buttons on the right -->
+		<h:form class="menu-right">
+			<p:commandButton value="Create connection" action="#{mainBean.getConn()}" update="conn-list"></p:commandButton>
+			<br /><br />
+			<p:commandButton value="Kill connection" action="#{mainBean.kill()}" update="conn-list"></p:commandButton>
+			<br /><br />
+			<p:commandButton value="Kill all" action="#{mainBean.killAll()}" update="conn-list"></p:commandButton>
+		</h:form>
+		 
+	</h:body>
 </html>

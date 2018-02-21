@@ -1,0 +1,28 @@
+@charset "UTF-8";
+.menu-left {
+	float: left;
+	margin-right: auto;
+	width: 48%;
+	min-height: 500px;
+	padding-top: 30px;
+	padding-left: 30px;
+	padding-bottom: 30px;
+	border: 2px solid;
+    border-radius: 8px;
+}
+
+.menu-right {
+	float: right;
+	margin-left: auto;
+	width: 48%;
+	height: 500px;
+	padding-top: 30px;
+	padding-left: 30px;
+	padding-bottom: 30px;
+	border: 2px solid;
+    border-radius: 8px;
+}
+
+.datalist-noborder .ui-widget-content {
+	border: none;
+}

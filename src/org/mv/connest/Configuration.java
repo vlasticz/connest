@@ -3,7 +3,7 @@ package org.mv.connest;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class Util {
+public class Configuration {
 	
 	private String connMsg;
 	
