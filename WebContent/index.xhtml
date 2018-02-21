@@ -7,7 +7,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Connest ${mainBean.getVersion()}</title>
+<title>Connest</title>
 </head>
 <body>
 	<h:form style="float: right; margin-right: 40px; margin-top: 40px">
@@ -15,6 +15,6 @@
 		<br></br>
 		<p:commandButton value="Kill connection" action="#{mainBean.killConn()}"></p:commandButton>
 	</h:form>
-	<div>#{mainBean.connMsg}</div>
+	<div style="white-space: pre-wrap">#{mainBean.connMsg}</div>
 </body>
 </html>

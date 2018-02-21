@@ -8,6 +8,7 @@ import javax.faces.bean.ViewScoped;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 @ManagedBean
@@ -15,9 +16,10 @@ import java.util.Calendar;
 public class MainBean {
 
 	// Just held open
-	private Connection db;
+	private Connection conn;
 	private String connMsg;
 	private Util util;
+	private ArrayList<Util> utils = new ArrayList<>();
 	
 	@PostConstruct
 	public void init() {
@@ -27,10 +29,10 @@ public class MainBean {
 	@PreDestroy
 	public void destroy() {
 		try {
-			if(!db.isClosed()) {
-				db.close();				
-				if(db.isClosed()) connMsg = "Connection killed";
-				db = null;
+			if(!conn.isClosed()) {
+				conn.close();				
+				if(conn.isClosed()) addConnMsg("Connection killed");
+				conn = null;
 				util = null;
 			}			
 		} catch(SQLException sqle) {
@@ -38,6 +40,9 @@ public class MainBean {
 		}		
 	}
 	
+	private void addConnMsg(String msg) {
+		connMsg = connMsg + "\n" +  msg;
+	}
 	
 	private boolean sendTimestamp() {
 		
@@ -48,7 +53,7 @@ public class MainBean {
 			// the mysql insert statement
 			String query = " insert into users (first_name, last_name, date_created, is_admin, num_points) values (?, ?, ?, ?, ?)";
 			// prepared statement
-			PreparedStatement stmt = db.prepareStatement(query);
+			PreparedStatement stmt = conn.prepareStatement(query);
 			stmt.setDate(1, timestamp);
 			stmt.setString(2, "we're here");
 			// execute
@@ -66,10 +71,13 @@ public class MainBean {
 		return Util.getVersion();
 	}
 	
-	public void getConn() {		
-		db = util.getNewConnection();
-		connMsg = util.getConnMsg();
-		sendTimestamp();
+	public void getConn() {
+		// create util
+		init();
+		conn = util.getNewConnection();
+		addConnMsg(util.getConnMsg());
+		// insert into db
+		//sendTimestamp();
 	}
 	
 	public void killConn() {
@@ -81,6 +89,6 @@ public class MainBean {
 	}
 	
 	public Connection getDb() {
-		return db;
+		return conn;
 	}
 }
