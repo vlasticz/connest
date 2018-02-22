@@ -15,18 +15,36 @@ import java.util.Calendar;
 @ManagedBean
 @ViewScoped
 public class MainBean {
-	
+
 	private Configuration conf;
 	private ArrayList<Connection> conns;
+	private volatile ConnectionThread thread;
 	
 	public ArrayList<Connection> getConns() {
 		return conns;
 	}
+	
 
 	@PostConstruct
-	public void init() {
+	public void init() {		
 		conf = new Configuration();
 		conns = new ArrayList<>();
+	}
+	
+	// THREAD
+    public void startThread() {
+        if(thread == null) {
+    		thread = new ConnectionThread();
+    		thread.start();
+        }
+    }
+	
+	
+	public void getConn() {
+		conns.add(conf.getNewConnection());
+		startThread();
+		// insert into db
+		//sendTimestamp();
 	}
 	
 	// kill last connection
@@ -40,6 +58,10 @@ public class MainBean {
 			kill(i);
 		}
 		conns.clear();
+		
+		// temp clean thread
+		thread.interrupt();		
+		
 	}
 	
 	// kill connection by index in connections
@@ -63,6 +85,7 @@ public class MainBean {
 	public void destroy() {
 		conns = null;
 		conf = null;
+		thread = null;
 	}
 	
 	/*
@@ -93,9 +116,5 @@ public class MainBean {
 		return Configuration.getVersion();
 	}
 	
-	public void getConn() {
-		conns.add(conf.getNewConnection());		
-		// insert into db
-		//sendTimestamp();
-	}
+	
 }
