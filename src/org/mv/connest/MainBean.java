@@ -2,7 +2,6 @@ package org.mv.connest;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.enterprise.context.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
@@ -17,60 +16,56 @@ import java.util.Calendar;
 public class MainBean {
 
 	private Configuration conf;
-	private ArrayList<Connection> conns;
-	private volatile ConnectionThread thread;
+	private ArrayList<ConnectionThread> threads;
 	
-	public ArrayList<Connection> getConns() {
-		return conns;
+	
+	public ArrayList<ConnectionThread> getThreads() {
+		return threads;
 	}
 	
 
 	@PostConstruct
 	public void init() {		
 		conf = new Configuration();
-		conns = new ArrayList<>();
+		threads = new ArrayList<>();
 	}
 	
-	// THREAD
+	/* THREAD
     public void startThread() {
         if(thread == null) {
     		thread = new ConnectionThread();
     		thread.start();
         }
     }
+	*/
 	
 	
-	public void getConn() {
-		conns.add(conf.getNewConnection());
-		startThread();
-		// insert into db
-		//sendTimestamp();
+	public void establishConn() {
+		threads.add(new ConnectionThread());
+		threads.get(threads.size() - 1).start();
 	}
 	
-	// kill last connection
+	// Kill last connection
 	public void kill() {
-		kill(conns.size() - 1);		
+		kill(threads.size() - 1);		
 	}
 	
-	// kill all connections
+	// Kill all threads
 	public void killAll() {
-		for(int i = conns.size() -1; i > -1; i--) {
+		for(int i = threads.size() - 1; i > -1; i--) {
 			kill(i);
 		}
-		conns.clear();
-		
-		// temp clean thread
-		thread.interrupt();		
-		
+		threads.clear();		
 	}
 	
-	// kill connection by index in connections
+	// Kill thread (connection) by index in connections
 	private void kill(int index) {
 		if(index > -1) {
 			try {
-				if(conns.get(index) != null) {
-					conns.get(index).close();
-					conns.remove(index);				
+				if(threads.get(index) != null) {
+					threads.get(index).getConn().close();
+					threads.get(index).interrupt();
+					threads.remove(index);				
 				}			
 				
 			} catch(SQLException sqle) {
@@ -80,12 +75,11 @@ public class MainBean {
 		}
 	}
 	
+	// Cleanup
 	@PreDestroy
-	// cleanup
 	public void destroy() {
-		conns = null;
+		threads = null;
 		conf = null;
-		thread = null;
 	}
 	
 	/*
