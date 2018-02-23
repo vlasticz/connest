@@ -3,9 +3,7 @@ package org.mv.connest;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class Util {
-	
-	private String connMsg;
+public class Configuration {
 	
 	private static String VERSION = "0.01";
 	private static String URL = "jdbc:mysql://asus-eee:3306/connest";
@@ -13,24 +11,18 @@ public class Util {
 	private static String PASS = "connest";
 	
 	
-	public Connection getNewConnection() {
+	public static Connection getNewConnection() {
 		try {
-			Connection c = DriverManager.getConnection(URL, USER, PASS);
-			connMsg = "Connection " + c.toString() + " established";
+			Connection c = DriverManager.getConnection(URL, USER, PASS);			
 			return c;
 		} catch(Exception e) {
-			e.printStackTrace();
-			connMsg = e.getMessage();
+			e.printStackTrace();			
 			return null;
 		}
 	}	
 	
 	public static String getVersion() {
 		return VERSION;
-	}
-	
-	public String getConnMsg() {
-		return connMsg;
 	}
 
 }
