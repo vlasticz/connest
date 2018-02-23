@@ -19,8 +19,8 @@
 		<!-- dataList on the left -->
 		<h:form id="conn-list">
 			<div class="datalist-noborder">
-				<p:dataList class="menu-left" id="message" name="message" value="#{mainBean.conns}" var="conn" emptyMessage="">
-					<h:outputText value="#{conn.toString()}" style="border-style: double"></h:outputText>
+				<p:dataList class="menu-left" id="message" name="message" value="#{mainBean.threads}" var="thread" emptyMessage="">
+					<h:outputText value="#{thread.getConn().toString()}" style="border-style: double"></h:outputText>
 					<br /><br />
 				</p:dataList>
 			</div>
@@ -28,7 +28,7 @@
 		
 		<!-- buttons on the right -->
 		<h:form class="menu-right">
-			<p:commandButton value="Create connection" action="#{mainBean.getConn()}" update="conn-list"></p:commandButton>
+			<p:commandButton value="Create connection" action="#{mainBean.establishConn()}" update="conn-list"></p:commandButton>
 			<br /><br />
 			<p:commandButton value="Kill connection" action="#{mainBean.kill()}" update="conn-list"></p:commandButton>
 			<br /><br />

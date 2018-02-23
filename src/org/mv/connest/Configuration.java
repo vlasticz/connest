@@ -5,32 +5,24 @@ import java.sql.DriverManager;
 
 public class Configuration {
 	
-	private String connMsg;
-	
 	private static String VERSION = "0.01";
 	private static String URL = "jdbc:mysql://asus-eee:3306/connest";
 	private static String USER = "connest";
 	private static String PASS = "connest";
 	
 	
-	public Connection getNewConnection() {
+	public static Connection getNewConnection() {
 		try {
-			Connection c = DriverManager.getConnection(URL, USER, PASS);
-			connMsg = "Connection " + c.toString() + " established";
+			Connection c = DriverManager.getConnection(URL, USER, PASS);			
 			return c;
 		} catch(Exception e) {
-			e.printStackTrace();
-			connMsg = e.getMessage();
+			e.printStackTrace();			
 			return null;
 		}
 	}	
 	
 	public static String getVersion() {
 		return VERSION;
-	}
-	
-	public String getConnMsg() {
-		return connMsg;
 	}
 
 }
