@@ -1,26 +1,38 @@
 @charset "UTF-8";
-.menu-left {
-	float: left;
-	margin-right: auto;
-	width: 48%;
-	min-height: 500px;
-	padding-top: 30px;
-	padding-left: 30px;
-	padding-bottom: 30px;
-	border: 2px solid;
-    border-radius: 8px;
+
+.header {
+	float: top;
+	width: 100%;
+	min-height: 60px
 }
 
-.menu-right {
-	float: right;
-	margin-left: auto;
-	width: 48%;
-	height: 500px;
-	padding-top: 30px;
-	padding-left: 30px;
-	padding-bottom: 30px;
-	border: 2px solid;
-    border-radius: 8px;
+.left-panel {	
+    float: left;
+    width: auto;
+    min-height: 500px;
+    
+    /* Border
+    border-left-style: dotted;
+    border-top-style: dotted;
+    border-width: 5px;
+    */
+}
+
+.right-panel {	
+	float: left;
+    min-width: 500px;
+    min-height:350px;
+    border-style: double;    
+}
+
+.button {
+	width: 100%;
+}
+
+.column-separator {
+	float: left;
+	width: 40px;
+	min-height: 10px;
 }
 
 .datalist-noborder .ui-widget-content {

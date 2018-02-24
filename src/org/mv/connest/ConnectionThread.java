@@ -12,11 +12,13 @@ public class ConnectionThread extends Thread{
 	
 	private Thread currThread;
 	private Connection conn;
+	private boolean log = true; // Logging turned off by default.
 		
 	// Constructor
 	public ConnectionThread() {
 		currThread = Thread.currentThread();
 		conn = Configuration.getNewConnection();
+		if(log) System.out.println("Connection " + conn.toString() + " created");
 	}	
 		
 	
@@ -25,7 +27,7 @@ public class ConnectionThread extends Thread{
 	 */
 	public void run() {
 		
-		sendTimestamp("[STARTED]");
+		if(log) sendTimestamp("[STARTED]");
 		
 		
 		// Main loop start
@@ -33,18 +35,22 @@ public class ConnectionThread extends Thread{
 			
 			// Main sleep sequence
 	        try {
-	        	Thread.sleep(5000);	        	
-	        	System.out.println(currThread.toString() + " running");
-	        	sendTimestamp("[RUNNING]");
+	        	Thread.sleep(5000);
+	        	if(log) {
+		        	System.out.println(currThread.toString() + " running");
+		        	sendTimestamp("[RUNNING]");
+	        	}
 	        	
 	        // Interruption
-	       	} catch(InterruptedException ie) {	       		
-	       		System.out.println(currThread.toString() + " interrupted");
-	       		currThread.interrupt();	       		
+	       	} catch(InterruptedException ie) {
+	       		if(log) {
+		       		System.out.println(currThread.toString() + " interrupted");
+		       		currThread.interrupt();
+	       		}
 	        }
 		}
 		
-		sendTimestamp("[STOPED]");
+		if(log) sendTimestamp("[STOPED]");
 		destroy();
 				
 		
@@ -56,7 +62,9 @@ public class ConnectionThread extends Thread{
 				
 		// Close connection
 		try {
+			String connString = conn.toString();
 			conn.close();
+			if(log) System.out.println("Connection " + connString + " closed.");
 		} catch(SQLException e) {
 			System.out.println(e.getMessage());
 		}

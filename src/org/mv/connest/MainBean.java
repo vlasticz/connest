@@ -24,17 +24,16 @@ public class MainBean {
 		threads = new ArrayList<>();
 	}
 	
-	/* THREAD
-    public void startThread() {
-        if(thread == null) {
-    		thread = new ConnectionThread();
-    		thread.start();
-        }
-    }
-	*/
 	
+	// Create connection threads
+	public void establishConnections() {
+		for(int i = 0; i < 10; i++) {
+			establishConnection();
+		}
+			
+	}
 	
-	public void establishConn() {
+	public void establishConnection() {
 		threads.add(new ConnectionThread());
 		threads.get(threads.size() - 1).start();
 	}

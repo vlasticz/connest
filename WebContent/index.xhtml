@@ -15,25 +15,40 @@
 
 
 	<h:body>
-	
-		<!-- dataList on the left -->
-		<h:form id="conn-list">
-			<div class="datalist-noborder">
-				<p:dataList class="menu-left" id="message" name="message" value="#{mainBean.threads}" var="thread" emptyMessage="">
-					<h:outputText value="#{thread.getConn().toString()}" style="border-style: double"></h:outputText>
-					<br /><br />
-				</p:dataList>
-			</div>
-		</h:form>
 		
-		<!-- buttons on the right -->
-		<h:form class="menu-right">
-			<p:commandButton value="Create connection" action="#{mainBean.establishConn()}" update="conn-list"></p:commandButton>
-			<br /><br />
-			<p:commandButton value="Kill connection" action="#{mainBean.kill()}" update="conn-list"></p:commandButton>
-			<br /><br />
-			<p:commandButton value="Kill all" action="#{mainBean.killAll()}" update="conn-list"></p:commandButton>
-		</h:form>
+		
+		<div class="header"></div>
+		
+		<div class="column-separator"></div>
+					
+		
+		<!-- buttons on the left -->
+
+			<h:form class="left-panel">
+				<p:commandButton class="button" value="Create connections" action="#{mainBean.establishConnections()}" update="conn-list"></p:commandButton>
+				<br /><br />
+				<p:commandButton class="button" value="Create connection" action="#{mainBean.establishConnection()}" update="conn-list"></p:commandButton>
+				<br /><br />
+				<p:commandButton class="button" value="Kill connection" action="#{mainBean.kill()}" update="conn-list"></p:commandButton>
+				<br /><br />
+				<p:commandButton class="button" value="Kill all" action="#{mainBean.killAll()}" update="conn-list"></p:commandButton>
+			</h:form>
+			
+			<div class="column-separator"></div>
+
+		<!-- dataList on the right -->
+			<div class="right-panel">
+			<h:form id="conn-list">
+				<div class="datalist-noborder"> <!-- otherwise the datalist itself has its own border -->
+					<p:dataList id="message" name="message" value="#{mainBean.threads}" var="thread" emptyMessage="">
+						<h:outputText value="#{thread.getConn().toString()}" style="border-style: double"></h:outputText>
+						<br /><br />
+					</p:dataList>
+				</div>
+				
+			</h:form>
+			</div>
+
 		 
 	</h:body>
 </html>
