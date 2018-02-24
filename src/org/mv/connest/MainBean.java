@@ -1,5 +1,6 @@
 package org.mv.connest;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
@@ -10,6 +11,8 @@ import javax.faces.bean.ApplicationScoped;
 @ManagedBean
 @ApplicationScoped
 public class MainBean {
+	
+	private static final int VALIDATION_TIMEOUT = 10000;
 	
 	private ArrayList<ConnectionThread> threads;
 	
@@ -66,6 +69,23 @@ public class MainBean {
 		threads = null;
 	}
 	
+	
+	// Getters, setters and stuff
+	public int getThreadsCount() {		
+		if(threads != null && threads.size() > -1) {
+			return threads.size();
+		} else return 0;
+	}
+	
+	public int getConnectionsCount() throws SQLException {
+		int count = 0;
+		for(ConnectionThread thread : threads) {
+			if(thread.getConn().isValid(VALIDATION_TIMEOUT)) {
+				count++;
+			}
+		}
+		return count;
+	}
 	
 	public String getVersion () {
 		return Configuration.getVersion();

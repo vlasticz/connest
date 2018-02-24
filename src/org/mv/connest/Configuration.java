@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 
 public class Configuration {
 	
+	
 	private static String VERSION = "1.00";
 	private static String URL = "jdbc:mysql://asus-eee:3306/connest";
 	private static String USER = "connest";
