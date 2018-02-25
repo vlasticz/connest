@@ -6,25 +6,25 @@ import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
+
+import org.primefaces.context.RequestContext;
+
 import javax.faces.bean.ApplicationScoped;
 
 @ManagedBean
 @ApplicationScoped
 public class MainBean {
-	
-	private static final int VALIDATION_TIMEOUT = 10000;
+			
+	private final String LATENCY_MASK = "Latency: %dms";
 	
 	private ArrayList<ConnectionThread> threads;
+	private int refreshRate;
 	
 	
-	public ArrayList<ConnectionThread> getThreads() {
-		return threads;
-	}
-	
-
 	@PostConstruct
-	public void init() {
+	private void init() {
 		threads = new ArrayList<>();
+		refreshRate = 2; // In seconds
 	}
 	
 	
@@ -41,36 +41,56 @@ public class MainBean {
 		threads.get(threads.size() - 1).start();
 	}
 	
-	// Kill last connection
+	
+	// Kill last thread
 	public void kill() {
-		kill(threads.size() - 1);		
+		kill(threads.get(threads.size() - 1));
 	}
 	
 	// Kill all threads
 	public void killAll() {
 		for(int i = threads.size() - 1; i > -1; i--) {
-			kill(i);
+			kill(threads.get(i));
 		}
-		threads.clear();		
+		
 	}
-	
-	// Kill thread (connection) by index in connections
-	private void kill(int index) {
-		if(index > -1 && threads.get(index) != null) {						
-			threads.get(index).interrupt();					
-			threads.remove(index);			
+		
+	// Kill thread - the main
+	public void kill(ConnectionThread thread) {
+		if(thread != null) {
+			threads.remove(thread);
+			thread.interrupt();
 		}
 		
 	}
 	
+	
+	// Echo
+	public void echo(String msg) {
+		System.out.println(msg);		
+	}
+	
+	
 	// Cleanup
 	@PreDestroy
-	public void destroy() {
+	private void destroy() {
 		threads = null;
 	}
 	
 	
 	// Getters, setters and stuff
+	public int getRefreshRate() {
+		return refreshRate;
+	}
+	
+	public String getLatency(ConnectionThread thread) {
+		if(thread.getLatency() > -1) {
+			return String.format(LATENCY_MASK, thread.getLatency());
+		} else {
+			return "N/A";
+		}
+	}
+	
 	public int getThreadsCount() {		
 		if(threads != null && threads.size() > -1) {
 			return threads.size();
@@ -80,11 +100,15 @@ public class MainBean {
 	public int getConnectionsCount() throws SQLException {
 		int count = 0;
 		for(ConnectionThread thread : threads) {
-			if(thread.getConn().isValid(VALIDATION_TIMEOUT)) {
+			if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
 				count++;
 			}
 		}
 		return count;
+	}
+	
+	public ArrayList<ConnectionThread> getThreads() {
+		return threads;
 	}
 	
 	public String getVersion () {

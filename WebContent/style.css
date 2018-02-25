@@ -29,9 +29,34 @@ body {margin:0; background:url(images/body_bg.png); font-family:Arial, Helvetica
 #sidebar ul {margin:0px; padding:0px;}
 #sidebar li {list-style:none; padding:1px 0 1px 12px; background:url(images/li.png) 0px 8px no-repeat;}
 
+/* Style created by me */
+.conn-item {
+	display: inline-block;
+	width: 100%;
+	border-style: solid;
+	border-width: 2px;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-color: #cec198;
+	border-radius: 10px 0px 0px 20px;
+	margin-bottom: 10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 5px;
+	padding-right: 2px;
+}
+.conn-item-right {
+	float: right;
+	margin-left: 15px;
+	/*position: fixed;
+	right: 0px;*/
+	/*left: 50px;*/
+}
 .button {width: 100%;}
 .no-border .ui-widget-content {border:none;}
 
+
+/* Original style again */
 #footer {color:#FEFDFC; clear:both; text-align:center; font-size:11px; line-height:17px; height:45px; padding-top:18px;}
 #footer a {color:#FEFDFC;}
 #footer a:hover {color:#F5F0EB;}

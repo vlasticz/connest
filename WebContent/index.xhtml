@@ -34,20 +34,30 @@ You can also purchase a PSD-file for this template.
 		</div>
 		<!--end header -->
 		<!-- main -->
+		
+		<!-- Refresh (update) timer -->
+		<h:form id="timer">
+			<p:poll interval="#{mainBean.refreshRate}" update="conn-list, info"></p:poll>
+		</h:form>
+		
+		<!-- Sidebars -->
 		<div id="sidebar">
 
+			<!-- Command buttons sidebar -->
 			<div class="sidebar_top"></div>
 			<div class="sidebar_main">
 				<h3>Basic operations</h3>
 				<ul>					
-					<li><p:commandButton class="button" value="Create connections" action="#{mainBean.establishConnections()}" update="conn-list, info"></p:commandButton></li>
-					<li><p:commandButton class="button" value="Create connection" action="#{mainBean.establishConnection()}" update="conn-list, info"></p:commandButton></li>				
-					<li><p:commandButton class="button" value="Kill connection" action="#{mainBean.kill()}" update="conn-list, info"></p:commandButton></li>
+					<li><p:commandButton class="button" value="Create ten" action="#{mainBean.establishConnections()}" update="conn-list, info"></p:commandButton></li>
+					<li><p:commandButton class="button" value="Create one" action="#{mainBean.establishConnection()}" update="conn-list, info"></p:commandButton></li>				
+					<li><p:commandButton class="button" value="Kill last" action="#{mainBean.kill()}" update="conn-list, info"></p:commandButton></li>
 					<li><p:commandButton class="button" value="Kill all" action="#{mainBean.killAll()}" update="conn-list, info"></p:commandButton></li>
+					<li><p:commandButton class="button" value="Refresh" action="#{gUIUpdater.update()}" update="info"></p:commandButton></li>
 				</ul>
 			</div>
 			<div class="sidebar_bottom"></div>
 
+			<!-- Info sidebar -->
 			<div class="sidebar_top"></div>
 			<h:form class="sidebar_main" id="info">
 				<h3>Info</h3>
@@ -60,14 +70,19 @@ You can also purchase a PSD-file for this template.
 
 		</div>
 
+		<!-- The main central connection list -->
 		<div id="text">
 			<div id="text_top"></div>
 
 			<h:form id="conn-list">
 				<div class="no-border"> <!-- otherwise the datalist itself has its own border -->
-				<p:dataList id="message" name="message" value="#{mainBean.threads}" var="thread" emptyMessage="">
-						<h:outputText value="#{thread.getConn().toString()}" style="border-style: double"></h:outputText>
-						<br /><br />
+				<p:dataList id="message" name="message" value="#{mainBean.threads}" var="thread" emptyMessage="" type="none">
+					<p:outputPanel class="conn-item">
+						<h:outputText value="#{thread.getConn().toString()}"></h:outputText>						
+						<p:commandButton class="conn-item-right" value="Kill" action="#{mainBean.kill(thread)}" update="conn-list, info"></p:commandButton>
+						<h:outputText class="conn-item-right" value="#{mainBean.getLatency(thread)}"></h:outputText>
+					</p:outputPanel>
+					
 				</p:dataList>
 				</div>
 			</h:form>
@@ -77,9 +92,8 @@ You can also purchase a PSD-file for this template.
 		<!-- end main -->
 		<!-- footer -->
 		<div id="footer">
-			&copy; Connest &nbsp;|&nbsp; <a href="#">Home</a> &nbsp;|&nbsp;
-			<a href="#">About</a> &nbsp;|&nbsp; <a href="#">Terms</a>
-			&nbsp;|&nbsp; <a href="#">Contact</a><br />
+			&copy; Connest &nbsp;|&nbsp; 2018
+			<br />
 			<!-- Please do not change or delete this link. Read the license! Thanks. :-) -->
 			Design by <a href="http://www.onteethwhitening.com/">On Teeth
 				Whitening</a>.
