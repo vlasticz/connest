@@ -21,7 +21,7 @@ public class ConnectionThread extends Thread{
 	private boolean logDb = true; // Database logging turned on.
 		
 	// Constructor
-	public ConnectionThread() {
+	public ConnectionThread() {		
 		currThread = Thread.currentThread();
 		conn = Configuration.getNewConnection();
 		sw = new StopWatch();

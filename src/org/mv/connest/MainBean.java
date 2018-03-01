@@ -7,8 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 
-import org.primefaces.context.RequestContext;
-
 import javax.faces.bean.ApplicationScoped;
 
 @ManagedBean
@@ -17,14 +15,15 @@ public class MainBean {
 			
 	private final String LATENCY_MASK = "Latency: %dms";
 	
-	private ArrayList<ConnectionThread> threads;
+	private ArrayList<ConnectionThread> threads;	
 	private int refreshRate;
 	
 	
 	@PostConstruct
 	private void init() {
 		threads = new ArrayList<>();
-		refreshRate = 2; // In seconds
+		refreshRate = 1; // In seconds
+		
 	}
 	
 	
@@ -39,6 +38,7 @@ public class MainBean {
 	public void establishConnection() {
 		threads.add(new ConnectionThread());
 		threads.get(threads.size() - 1).start();
+		new Configuration().save();
 	}
 	
 	
@@ -57,9 +57,9 @@ public class MainBean {
 		
 	// Kill thread - the main
 	public void kill(ConnectionThread thread) {
-		if(thread != null) {
-			threads.remove(thread);
+		if(thread != null) {			
 			thread.interrupt();
+			threads.remove(thread);
 		}
 		
 	}
@@ -100,6 +100,7 @@ public class MainBean {
 	public int getConnectionsCount() throws SQLException {
 		int count = 0;
 		for(ConnectionThread thread : threads) {
+			
 			if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
 				count++;
 			}
