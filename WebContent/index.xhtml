@@ -37,7 +37,8 @@ You can also purchase a PSD-file for this template.
 		
 		<!-- Refresh (update) timer -->
 		<h:form id="timer">
-			<p:poll interval="#{mainBean.refreshRate}" update="conn-list, info"></p:poll>
+			<p:poll interval="#{mainBean.refreshRate}" listener="#{mainBean.cleanup()}" update="conn-list, info"></p:poll>
+			
 		</h:form>
 		
 		<!-- Sidebars -->

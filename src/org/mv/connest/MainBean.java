@@ -36,9 +36,15 @@ public class MainBean {
 	}
 	
 	public void establishConnection() {
-		threads.add(new ConnectionThread());
-		threads.get(threads.size() - 1).start();
-		new Configuration().save();
+		threads.add(new ConnectionThread());			
+	}
+	
+	
+	// Cleanup stopped threads
+	public void cleanup() {
+		for(int i = threads.size() - 1; i > -1; i--) {
+			if(!threads.get(i).isAlive()) threads.remove(i);
+		}
 	}
 	
 	
@@ -101,8 +107,10 @@ public class MainBean {
 		int count = 0;
 		for(ConnectionThread thread : threads) {
 			
-			if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
-				count++;
+			if(thread.getConn() != null) {
+				if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
+					count++;
+				}
 			}
 		}
 		return count;

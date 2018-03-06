@@ -23,9 +23,18 @@ public class ConnectionThread extends Thread{
 	// Constructor
 	public ConnectionThread() {		
 		currThread = Thread.currentThread();
-		conn = Configuration.getNewConnection();
 		sw = new StopWatch();
-		if(log) System.out.println("Connection " + conn.toString() + " created");
+		
+		// Create connection if can be obtained and start thread
+		if(Configuration.getNewConnection() != null) {
+			conn = Configuration.getNewConnection();
+			if(log) System.out.println("Connection " + conn.toString() + " created");			
+			// Start itself
+			currThread.start();
+		} else {
+			destroy();
+		}		
+		
 	}	
 		
 	
@@ -38,15 +47,14 @@ public class ConnectionThread extends Thread{
 		
 		
 		// Main loop start
-		while(!currThread.isInterrupted()) {
-						
+		while(!currThread.isInterrupted()) {						
 			
 			// Main sleep sequence
 	        try {
 	        	Thread.sleep(5000);
 	        	if(log) System.out.println(currThread.toString() + " running");
 		        if(logDb) sendTimestamp("[RUNNING]");
-
+		        
 		        // Latency measuring		        
 		        sw.start();
 		        if(conn.isValid(VALIDATION_TIMEOUT)) {
@@ -76,16 +84,18 @@ public class ConnectionThread extends Thread{
 	
 	
 	@PreDestroy	
-	public void destroy() {
+	public void destroy() {		
 				
 		// Close connection
 		try {			
-			if(log) System.out.println("Connection " + conn.toString() + " closed.");
-			if(logDb) sendTimestamp("[STOPED]");
-			conn.close();	
+			if(log) System.out.println("Connection " + conn.toString() + " closed.");			
+			if(conn != null) {
+				if(logDb) sendTimestamp("[STOPED]");
+				conn.close();
+			}
 						
-		} catch(SQLException e) {
-			System.out.println(e.getMessage());
+		} catch(SQLException sqle) {
+			System.out.println(sqle.getMessage());
 		}
 		
 	}
@@ -124,8 +134,8 @@ public class ConnectionThread extends Thread{
 			// execute
 			stmt.execute();
 			
-		} catch(Exception e) {
-			System.out.println(e.getMessage());			
+		} catch(Exception e) {			
+			e.printStackTrace();
 		}		
 		
 	}
