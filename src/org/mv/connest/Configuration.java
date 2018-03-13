@@ -1,8 +1,12 @@
 package org.mv.connest;
 
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Writer;
+import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,26 +14,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-
-public class Configuration {
+public class Configuration {	
+		
+	private static final String VERSION = "0.1.1";
+	private static final String CONF_PATH_PARAM = "connest.config.path";
+	private static final String URL_PROPERTY_NAME = "url";
+	private static final String USER_PROPERTY_NAME = "user";
+	private static final String PASS_PROPERTY_NAME = "pass";
 	
-	
-	private static String VERSION = "0.0.0";
-	private static String URL = "jdbc:mysql://46.101.240.246:3306/connest";
-	private static String USER = "connest";
-	private static String PASS = "connest";
-	
-	private Properties props;
-	private Writer writer;
-	
-	//private RuntimeMxBean runtimeMxBean;
+	private static boolean writeHeader = true;
+	private static Properties props;
 	
 	
 	public static Connection getNewConnection() {
 		try {
-			Connection c = DriverManager.getConnection(URL, USER, PASS);			
+			Connection c = DriverManager.getConnection(props.getProperty(URL_PROPERTY_NAME),
+					props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));			
 			return c;
 			
 		// Can be anything here
@@ -55,19 +55,35 @@ public class Configuration {
 			return false;
 		}
 	}
-	
-	public static String getVersion() {
-		return VERSION;
-	}
-	
-	public static String getURL() {
-		return URL;
-	}
-	
-	
-	public static void save() {
-		//writer = new FileWriter("");
 		
+		
+	public static void save() throws FileNotFoundException, IOException {
+		
+		Properties p = new Properties();		
+		p.setProperty("url", props.getProperty(URL_PROPERTY_NAME));		
+		p.setProperty("user", props.getProperty(USER_PROPERTY_NAME));		
+		p.setProperty("pass", props.getProperty(PASS_PROPERTY_NAME));
+		
+		if(writeHeader) {
+			p.store(new FileOutputStream(getConfigPath()), "Connest " + getVersion() + " default properties file");
+		} else {
+			p.store(new FileOutputStream(getConfigPath()), null);
+		}
+		
+	}
+	
+	public static void load() {
+		props = new Properties();
+		try(InputStream is = new FileInputStream(getConfigPath())) {
+			props.load(is);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+		
+	
+	public static void printVMParams() {		
 		// get a RuntimeMXBean reference
 		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
 
@@ -77,15 +93,20 @@ public class Configuration {
 		
 		// print the arguments using my logger
 		for (String arg : args) System.out.println("ARG: " + arg);
-		
-		
-		/*
-		props = new Properties();
-		props.setProperty("url", URL);
-		props.setProperty("user", USER);
-		props.setProperty("pass", PASS);
-		*/
-		
+		System.out.println(getConfigPath());
+	}
+	
+	
+	private static String getConfigPath() {		
+		return System.getProperty(CONF_PATH_PARAM);
+	}
+	
+	public static String getVersion() {
+		return VERSION;
+	}
+	
+	public static String getURL() {
+		return props.getProperty("url");
 	}
 	
 	

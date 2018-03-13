@@ -1,5 +1,7 @@
 package org.mv.connest;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -12,23 +14,32 @@ import javax.faces.bean.ApplicationScoped;
 @ManagedBean
 @ApplicationScoped
 public class MainBean {
-			
-	private final String LATENCY_MASK = "Latency: %dms";
-	
+				
 	private ArrayList<ConnectionThread> threads;	
 	private int refreshRate;
+	
+	private final String LATENCY_MASK = "Latency: %dms";
 	
 	
 	@PostConstruct
 	private void init() {
 		threads = new ArrayList<>();
 		refreshRate = 1; // In seconds
-		Configuration.save();
+		Configuration.printVMParams();
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch(ClassNotFoundException cnfe) {
 			cnfe.printStackTrace();
 		}
+	}
+	
+	
+	public void loadConfiguration() throws FileNotFoundException, IOException {
+		Configuration.load();
+	}
+	
+	public void saveConfiguration() throws FileNotFoundException, IOException {
+		Configuration.save();
 	}
 	
 	
