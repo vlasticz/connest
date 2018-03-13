@@ -23,7 +23,12 @@ public class MainBean {
 	private void init() {
 		threads = new ArrayList<>();
 		refreshRate = 1; // In seconds
-		
+		Configuration.save();
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch(ClassNotFoundException cnfe) {
+			cnfe.printStackTrace();
+		}
 	}
 	
 	
@@ -36,21 +41,27 @@ public class MainBean {
 	}
 	
 	public void establishConnection() {
-		threads.add(new ConnectionThread());			
+		ConnectionThread ct = new ConnectionThread();
+		threads.add(ct);
+		// If connection cannot be established it's going to be
+		// in terminated state.
+		if(!ct.isTerminated()) ct.start();
 	}
 	
 	
 	// Cleanup stopped threads
 	public void cleanup() {
 		for(int i = threads.size() - 1; i > -1; i--) {
-			if(!threads.get(i).isAlive()) threads.remove(i);
+			if(threads.get(i).isTerminated()) threads.remove(i);
 		}
 	}
 	
 	
 	// Kill last thread
 	public void kill() {
-		kill(threads.get(threads.size() - 1));
+		if(threads.size() > 0) {
+			kill(threads.get(threads.size() - 1));
+		}
 	}
 	
 	// Kill all threads
@@ -65,7 +76,6 @@ public class MainBean {
 	public void kill(ConnectionThread thread) {
 		if(thread != null) {			
 			thread.interrupt();
-			threads.remove(thread);
 		}
 		
 	}

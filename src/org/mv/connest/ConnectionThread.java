@@ -3,7 +3,6 @@ package org.mv.connest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Calendar;
 import org.apache.commons.lang3.time.StopWatch;
 
 import javax.annotation.PreDestroy;
@@ -13,27 +12,29 @@ public class ConnectionThread extends Thread{
 	
 	public static final int VALIDATION_TIMEOUT = 10000;
 	
+	private boolean terminate = false; // Telling the thread whether to terminate itself.
+	private boolean finished = false; // Whether it's terminated already.
 	private Thread currThread;
 	private Connection conn;
 	private long latency;
 	private StopWatch sw;
-	private boolean log = false; // Console logging turned off by default.
+	private boolean log = true; // Console logging turned off by default.
 	private boolean logDb = true; // Database logging turned on.
 		
 	// Constructor
-	public ConnectionThread() {		
+	public ConnectionThread() {
 		currThread = Thread.currentThread();
 		sw = new StopWatch();
 		
 		// Create connection if can be obtained and start thread
-		if(Configuration.getNewConnection() != null) {
+		if(Configuration.canGetNewConnection()) {
 			conn = Configuration.getNewConnection();
 			if(log) System.out.println("Connection " + conn.toString() + " created");			
-			// Start itself
-			currThread.start();
 		} else {
-			destroy();
-		}		
+			if(log) System.out.println("Connect to " + Configuration.getURL() + " failed.");
+			terminate = true;
+			finished = true;
+		}
 		
 	}	
 		
@@ -43,11 +44,12 @@ public class ConnectionThread extends Thread{
 	 */
 	public void run() {
 		
-		if(logDb) sendTimestamp("[STARTED]");
+		// Could be terminating due to no db connection.
+		if(!terminate && logDb) sendTimestamp("[STARTED]");
 		
 		
 		// Main loop start
-		while(!currThread.isInterrupted()) {						
+		while(!terminate) {						
 			
 			// Main sleep sequence
 	        try {
@@ -62,18 +64,20 @@ public class ConnectionThread extends Thread{
 		        	latency = sw.getTime();
 		        	sw.reset();
 		        } else {
+		        	sw.stop();
+		        	sw.reset();
 		        	latency = -1;
 		        }
 	        	
 		    // SQLException
 	        } catch(SQLException sqle) {
-	        	System.out.println(sqle.getMessage());
+	        	sqle.printStackTrace();	        	
 	        	
 	        // Interruption
 	       	} catch(InterruptedException ie) {
 	       		if(log) System.out.println(currThread.toString() + " interrupted");		       		
 	       		if(logDb) sendTimestamp("[INTERRUPTED]");
-	       		currThread.interrupt();
+	       		terminate = true;
 	        }
 		}
 				
@@ -87,17 +91,18 @@ public class ConnectionThread extends Thread{
 	public void destroy() {		
 				
 		// Close connection
-		try {			
-			if(log) System.out.println("Connection " + conn.toString() + " closed.");			
-			if(conn != null) {
-				if(logDb) sendTimestamp("[STOPED]");
+		try {					
+			if(conn != null) {				
+				if(logDb) sendTimestamp("[CLOSING]");
 				conn.close();
+				if(log) System.out.println("Connection " + conn.toString() + " closed.");
 			}
 						
 		} catch(SQLException sqle) {
 			System.out.println(sqle.getMessage());
 		}
 		
+		finished = true;		
 	}
 	
 	
@@ -115,21 +120,17 @@ public class ConnectionThread extends Thread{
 	}
 	
 	private void sendTimestamp(String msg, Boolean detail) {
-		
-		Calendar calendar = Calendar.getInstance();
-		java.sql.Date timestamp = new java.sql.Date(calendar.getTime().getTime());
-		
+				
 		try {
 			// the mysql insert statement
-			String query = " insert into connections (timestamp, connection, thread, msg) values (?, ?, ?, ?)";
+			String query = "insert into connest.connections (connection, thread, msg) values (?, ?, ?)";
 			// prepared statement
 			PreparedStatement stmt = conn.prepareStatement(query);
 			if(detail) {
-				stmt.setString(2, getConn().toString());
-				stmt.setString(3, currThread.toString());
-			}
-			stmt.setDate(1, timestamp);			
-			stmt.setString(4, msg);
+				stmt.setString(1, getConn().toString());
+				stmt.setString(2, currThread.toString());
+			}		
+			stmt.setString(3, msg);
 			
 			// execute
 			stmt.execute();
@@ -148,6 +149,14 @@ public class ConnectionThread extends Thread{
 	
 	public long getLatency() {
 		return latency;
+	}
+	
+	public boolean isTerminated() {
+		if(terminate && finished) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }
