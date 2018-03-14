@@ -27,11 +27,10 @@ public class ConnectionThread extends Thread{
 		sw = new StopWatch();
 		
 		// Create connection if can be obtained and start thread
-		if(Configuration.canGetNewConnection()) {
-			conn = Configuration.getNewConnection();
+		if((conn = Configuration.getNewConnection()) != null) {
 			if(log) System.out.println("Connection " + conn.toString() + " created");			
 		} else {
-			if(log) System.out.println("Connect to " + Configuration.getURL() + " failed.");
+			if(log) System.out.println("Connecting failed.");
 			terminate = true;
 			finished = true;
 		}

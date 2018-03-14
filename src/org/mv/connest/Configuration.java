@@ -72,11 +72,11 @@ public class Configuration {
 		
 	}
 	
-	public static void load() {
-		props = new Properties();
+	public static void load() {		
 		try(InputStream is = new FileInputStream(getConfigPath())) {
 			props.load(is);
 		} catch(Exception e) {
+			System.out.println("Properties not loaded.");
 			e.printStackTrace();
 		}
 		
@@ -107,6 +107,10 @@ public class Configuration {
 	
 	public static String getURL() {
 		return props.getProperty("url");
+	}
+	
+	public static Properties getProperties() {
+		return props;
 	}
 	
 	

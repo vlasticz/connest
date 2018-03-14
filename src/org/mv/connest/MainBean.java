@@ -1,15 +1,12 @@
 package org.mv.connest;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.faces.bean.ManagedBean;
-
 import javax.faces.bean.ApplicationScoped;
+import javax.faces.bean.ManagedBean;
 
 @ManagedBean
 @ApplicationScoped
@@ -31,15 +28,28 @@ public class MainBean {
 		} catch(ClassNotFoundException cnfe) {
 			cnfe.printStackTrace();
 		}
+		
+		loadConfiguration();		
+		if(Configuration.getProperties() != null) {
+			System.out.println("Properties loaded.");
+		}
 	}
 	
 	
-	public void loadConfiguration() throws FileNotFoundException, IOException {
-		Configuration.load();
+	public void loadConfiguration() {
+		try {
+			Configuration.load();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void saveConfiguration() throws FileNotFoundException, IOException {
-		Configuration.save();
+	public void saveConfiguration() {
+		try {
+			Configuration.save();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -105,11 +115,7 @@ public class MainBean {
 	}
 	
 	
-	// Getters, setters and stuff
-	public int getRefreshRate() {
-		return refreshRate;
-	}
-	
+	// Get latency full string returned.
 	public String getLatency(ConnectionThread thread) {
 		if(thread.getLatency() > -1) {
 			return String.format(LATENCY_MASK, thread.getLatency());
@@ -118,12 +124,14 @@ public class MainBean {
 		}
 	}
 	
+	// Thread count.
 	public int getThreadsCount() {		
 		if(threads != null && threads.size() > -1) {
 			return threads.size();
 		} else return 0;
 	}
 	
+	// Connection count.
 	public int getConnectionsCount() throws SQLException {
 		int count = 0;
 		for(ConnectionThread thread : threads) {
@@ -135,6 +143,12 @@ public class MainBean {
 			}
 		}
 		return count;
+	}
+	
+	
+	// Getters, setters and stuff
+	public int getRefreshRate() {
+		return refreshRate;
 	}
 	
 	public ArrayList<ConnectionThread> getThreads() {
