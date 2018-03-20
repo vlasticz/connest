@@ -21,8 +21,8 @@ public class MainBean {
 	@PostConstruct
 	private void init() {
 		threads = new ArrayList<>();
-		refreshRate = 1; // In seconds
-		Configuration.printVMParams();
+		refreshRate = 1; // In seconds.
+		Configuration.printVMParams(); // Print start to console.
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch(ClassNotFoundException cnfe) {
@@ -30,9 +30,7 @@ public class MainBean {
 		}
 		
 		loadConfiguration();		
-		if(Configuration.getProperties() != null) {
-			System.out.println("Properties loaded.");
-		}
+		
 	}
 	
 	
@@ -112,6 +110,7 @@ public class MainBean {
 	@PreDestroy
 	private void destroy() {
 		threads = null;
+		System.out.println("Exiting");
 	}
 	
 	

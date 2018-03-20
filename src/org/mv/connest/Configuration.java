@@ -72,9 +72,13 @@ public class Configuration {
 		
 	}
 	
-	public static void load() {		
+	public static void load() {
+		
 		try(InputStream is = new FileInputStream(getConfigPath())) {
+			props = new Properties();
 			props.load(is);
+			System.out.println("Properties loaded - " + props.toString());
+			
 		} catch(Exception e) {
 			System.out.println("Properties not loaded.");
 			e.printStackTrace();
@@ -93,7 +97,7 @@ public class Configuration {
 		
 		// print the arguments using my logger
 		for (String arg : args) System.out.println("ARG: " + arg);
-		System.out.println(getConfigPath());
+		System.out.println("Properties file: " + getConfigPath());
 	}
 	
 	

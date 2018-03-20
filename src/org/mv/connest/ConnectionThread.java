@@ -29,8 +29,7 @@ public class ConnectionThread extends Thread{
 		// Create connection if can be obtained and start thread
 		if((conn = Configuration.getNewConnection()) != null) {
 			if(log) System.out.println("Connection " + conn.toString() + " created");			
-		} else {
-			if(log) System.out.println("Connecting failed.");
+		} else {			
 			terminate = true;
 			finished = true;
 		}
