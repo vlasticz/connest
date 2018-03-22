@@ -9,14 +9,12 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 public class Configuration {	
@@ -24,14 +22,18 @@ public class Configuration {
 	private static final String VERSION = "0.1.1";
 	private static final String DATASOURCE_CONTEXT_BASE = "java:comp/env/";
 	
-	private static final String CONF_PATH_PARAM = "connest.config.path";
-	private static final String CONN_TYPE_PARAM = "connest.datasource.type";
-	private static final String DATASOURCE_CONTEXT_PARAM = "connest.datasource.context";
+	// Command line arguments
+	private static final String CONF_PATH_PARAM = "connest.config.path";	
 	private static final String DEBUG_PARAM = "connest.debug";
-		
+	
+	// Properties file
+	private static final String CONN_TYPE_PARAM = "datasource.type";
+	private static final String DATASOURCE_CONTEXT_PARAM = "datasource.context";		
 	private static final String URL_PROPERTY_NAME = "url";
 	private static final String USER_PROPERTY_NAME = "user";
 	private static final String PASS_PROPERTY_NAME = "pass";
+	
+	// Inner finals
 	private static final String JDBC = "JDBC";
 	private static final String JNDI = "JNDI";
 	
@@ -62,11 +64,8 @@ public class Configuration {
 			    DataSource ds = (DataSource)ctx.lookup(getDatasourceContext());
 			    return ds.getConnection();
 			    
-			} catch(NamingException ne) {
-				ne.printStackTrace();
-				return null;
-			} catch(SQLException sqle) {
-				sqle.printStackTrace();
+			} catch(Exception e) {
+				e.printStackTrace();
 				return null;
 			}
 			
@@ -126,12 +125,22 @@ public class Configuration {
 	
 	// Getters & setters
 	public static boolean isDebug() {
-		return Boolean.getBoolean(DEBUG_PARAM); // Works as System.getProperty
+		return Boolean.getBoolean(DEBUG_PARAM); // Works as System.getProperty		
 	}
 	
 	private static String getDatasourceContext() {
-		return String.format("%s", DATASOURCE_CONTEXT_BASE +
-				System.getProperty(DATASOURCE_CONTEXT_PARAM, "configure/context"));
+			
+		// Default values custom handled due to not relevant exceptions
+		// when context is defined as "datasource.context=<null>".
+		String context = "<none>";
+		if(props.getProperty(DATASOURCE_CONTEXT_PARAM) != null && 
+				!props.getProperty(DATASOURCE_CONTEXT_PARAM).equals("")) {
+			
+			context = String.format("%s", DATASOURCE_CONTEXT_BASE +
+					props.getProperty(DATASOURCE_CONTEXT_PARAM));			
+		}
+		return context;		
+				
 	}
 	
 	private static String getConfigPath() {		
@@ -140,7 +149,8 @@ public class Configuration {
 	}
 	
 	private static String getConnectionType() {
-		return System.getProperty(CONN_TYPE_PARAM, "JDBC");
+		// return System.getProperty(CONN_TYPE_PARAM, "JDBC");
+		return props.getProperty(CONN_TYPE_PARAM, "JDBC");
 	}
 	
 	public static String getVersion() {
