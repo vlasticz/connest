@@ -132,6 +132,7 @@ public class ConnectionThread extends Thread{
 			
 			// execute
 			stmt.execute();
+			stmt.close();
 			
 		} catch(Exception e) {			
 			e.printStackTrace();
