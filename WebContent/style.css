@@ -53,6 +53,9 @@ body {margin:0; background:url(images/body_bg.png); font-family:Arial, Helvetica
 	right: 0px;*/
 	/*left: 50px;*/
 }
+.invisible {
+	display: none;
+}
 .button {width: 100%;}
 .no-border .ui-widget-content {border:none;}
 

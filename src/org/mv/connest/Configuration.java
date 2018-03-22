@@ -14,49 +14,72 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 public class Configuration {	
 		
 	private static final String VERSION = "0.1.1";
+	private static final String DATASOURCE_CONTEXT_BASE = "java:comp/env/";
+	
 	private static final String CONF_PATH_PARAM = "connest.config.path";
+	private static final String CONN_TYPE_PARAM = "connest.datasource.type";
+	private static final String DATASOURCE_CONTEXT_PARAM = "connest.datasource.context";
+	private static final String DEBUG_PARAM = "connest.debug";
+		
 	private static final String URL_PROPERTY_NAME = "url";
 	private static final String USER_PROPERTY_NAME = "user";
 	private static final String PASS_PROPERTY_NAME = "pass";
+	private static final String JDBC = "JDBC";
+	private static final String JNDI = "JNDI";
 	
 	private static boolean writeHeader = true;
 	private static Properties props;
 	
 	
-	public static Connection getNewConnection() {
-		try {
-			Connection c = DriverManager.getConnection(props.getProperty(URL_PROPERTY_NAME),
-					props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));			
-			return c;
-			
-		// Can be anything here
-		} catch(Exception e) {
-			e.printStackTrace();		
-			return null;
-		}
-	}	
-	
-	
-	public static boolean canGetNewConnection() {
-		Connection c = getNewConnection();
+	public static Connection getNewConnection() {		
 		
-		if(c != null) {
+		// JDBC
+		if(getConnectionType().equals(JDBC)) {
 			try {
-				c.close();
+				return DriverManager.getConnection(props.getProperty(URL_PROPERTY_NAME),
+						props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));			
+				
+			// Can be anything here
+			} catch(Exception e) {
+				e.printStackTrace();		
+				return null;
+			}
+			
+		}
+		
+		// JNDI
+		if(getConnectionType().equals(JNDI)) {
+			try {
+				Context ctx = new InitialContext();
+			    DataSource ds = (DataSource)ctx.lookup(getDatasourceContext());
+			    return ds.getConnection();
+			    
+			} catch(NamingException ne) {
+				ne.printStackTrace();
+				return null;
 			} catch(SQLException sqle) {
 				sqle.printStackTrace();
+				return null;
 			}
-			return true;
 			
-		} else {
-			return false;
 		}
-	}
+
 		
+		// None of the above.
+		System.out.println("Connection type not recognized.");
+		return null;
 		
+	}	
+	
+			
 	public static void save() throws FileNotFoundException, IOException {
 		
 		Properties p = new Properties();		
@@ -67,7 +90,7 @@ public class Configuration {
 		if(writeHeader) {
 			p.store(new FileOutputStream(getConfigPath()), "Connest " + getVersion() + " default properties file");
 		} else {
-			p.store(new FileOutputStream(getConfigPath()), null);
+			p.store(new FileOutputStream(getConfigPath()), "");
 		}
 		
 	}
@@ -101,8 +124,23 @@ public class Configuration {
 	}
 	
 	
+	// Getters & setters
+	public static boolean isDebug() {
+		return Boolean.getBoolean(DEBUG_PARAM); // Works as System.getProperty
+	}
+	
+	private static String getDatasourceContext() {
+		return String.format("%s", DATASOURCE_CONTEXT_BASE +
+				System.getProperty(DATASOURCE_CONTEXT_PARAM, "configure/context"));
+	}
+	
 	private static String getConfigPath() {		
-		return System.getProperty(CONF_PATH_PARAM);
+		return System.getProperty(CONF_PATH_PARAM, System.getProperty("user.home").toString() +
+				System.getProperty("file.separator") + "connest.properties");
+	}
+	
+	private static String getConnectionType() {
+		return System.getProperty(CONN_TYPE_PARAM, "JDBC");
 	}
 	
 	public static String getVersion() {
@@ -116,6 +154,5 @@ public class Configuration {
 	public static Properties getProperties() {
 		return props;
 	}
-	
-	
+		
 }

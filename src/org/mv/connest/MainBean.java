@@ -34,6 +34,13 @@ public class MainBean {
 	}
 	
 	
+	public String getDebugSidebarVisibility() {
+		if(Configuration.isDebug()) {
+			return "";
+		} else return "invisible";
+	}
+	
+	
 	public void loadConfiguration() {
 		try {
 			Configuration.load();
