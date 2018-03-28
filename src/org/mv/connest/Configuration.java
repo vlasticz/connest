@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 public class Configuration {	
 		
-	private static final String VERSION = "0.1.1";
+	private static final String VERSION = "0.1.11";
 	private static final String DATASOURCE_CONTEXT_BASE = "java:comp/env/";
 	
 	// Command line arguments
@@ -28,7 +28,7 @@ public class Configuration {
 	
 	// Properties file
 	private static final String CONN_TYPE_PARAM = "datasource.type";
-	private static final String DATASOURCE_CONTEXT_PARAM = "datasource.context";		
+	private static final String DATASOURCE_CONTEXT_PARAM = "datasource.context";
 	private static final String URL_PROPERTY_NAME = "url";
 	private static final String USER_PROPERTY_NAME = "user";
 	private static final String PASS_PROPERTY_NAME = "pass";

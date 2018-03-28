@@ -86,7 +86,7 @@ public class ConnectionThread extends Thread{
 	
 	
 	@PreDestroy	
-	public void destroy() {		
+	public void destroy() {
 				
 		// Close connection
 		try {					
