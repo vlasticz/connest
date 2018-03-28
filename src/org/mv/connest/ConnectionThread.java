@@ -27,12 +27,14 @@ public class ConnectionThread extends Thread{
 		sw = new StopWatch();
 		
 		// Create connection if can be obtained and start thread
+		/*
 		if((conn = Configuration.getNewConnection()) != null) {
 			if(log) System.out.println("Connection " + conn.toString() + " created");			
 		} else {			
 			terminate = true;
 			finished = true;
 		}
+		*/
 		
 	}	
 		
@@ -42,29 +44,48 @@ public class ConnectionThread extends Thread{
 	 */
 	public void run() {
 		
-		// Could be terminating due to no db connection.
-		if(!terminate && logDb) sendTimestamp("[STARTED]");
-		
+		// Starting without connection	
 		
 		// Main loop start
-		while(!terminate) {						
+		while(!terminate) {				
 			
 			// Main sleep sequence
 	        try {
-	        	Thread.sleep(5000);
-	        	if(log) System.out.println(currThread.toString() + " running");
-		        if(logDb) sendTimestamp("[RUNNING]");
-		        
-		        // Latency measuring		        
-		        sw.start();
-		        if(conn.isValid(VALIDATION_TIMEOUT)) {
-		        	sw.stop();
-		        	latency = sw.getTime();
-		        	sw.reset();
-		        } else {
-		        	sw.stop();
-		        	sw.reset();
-		        	latency = -1;
+	        	// Debug
+	        	System.out.println("Main sleep seq - connection: " + conn);
+	        	
+	        	if(conn != null) {
+	        		// If we got a connection
+	        		
+		        	Thread.sleep(5000);
+		        	if(log) System.out.println(currThread.toString() + " running");
+			        if(logDb) sendTimestamp("[RUNNING]");
+			        
+			        // Latency measuring
+			        
+			        sw.start();
+			        if(conn.isValid(VALIDATION_TIMEOUT)) {
+			        	sw.stop();
+			        	latency = sw.getTime();
+			        	sw.reset();
+			        } else {
+			        	sw.stop();
+			        	sw.reset();
+			        	latency = -1;
+			        }
+		        }
+	        	
+	        	if(conn == null) {
+		        	// Create connection if can be obtained, if not, count - 1 and try again after sleep
+		        	
+		        	if((conn = Configuration.getNewConnection()) != null) {
+		    			if(log) System.out.println("Connection " + conn.toString() + " created");
+		    		
+		    		// Connecting times-out after JNDI maxWaitMilis 
+		    		} else {		    			
+		    			terminate = true;		    			    			
+		    		}
+		        	
 		        }
 	        	
 		    // SQLException
@@ -74,9 +95,9 @@ public class ConnectionThread extends Thread{
 	        // Interruption
 	       	} catch(InterruptedException ie) {
 	       		if(log) System.out.println(currThread.toString() + " interrupted");		       		
-	       		if(logDb) sendTimestamp("[INTERRUPTED]");
+	       		if(logDb && conn != null) sendTimestamp("[INTERRUPTED]");
 	       		terminate = true;
-	        }
+			}
 		}
 				
 		destroy();
@@ -158,4 +179,22 @@ public class ConnectionThread extends Thread{
 		}
 	}
 	
+}
+
+
+class ConnectionTimeoutException extends Exception
+{
+    /**
+	* 
+	*/
+	private static final long serialVersionUID = 1L;
+
+	// Parameterless Constructor
+    public ConnectionTimeoutException() {}
+
+    // Constructor that accepts a message
+    public ConnectionTimeoutException(String message)
+    {
+       super(message);
+    }
 }
