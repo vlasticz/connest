@@ -16,6 +16,7 @@ public class MainBean {
 	private int refreshRate;
 	
 	private final String LATENCY_MASK = "Latency: %dms";
+	private final String ELAPSED_MASK = "Elapsed: %ds";
 	
 	
 	@PostConstruct
@@ -125,6 +126,15 @@ public class MainBean {
 	public String getLatency(ConnectionThread thread) {
 		if(thread.getLatency() > -1) {
 			return String.format(LATENCY_MASK, thread.getLatency());
+		} else {
+			return "N/A";
+		}
+	}
+	
+	// Get total elapsed time.
+	public String getElapsed(ConnectionThread thread) {
+		if(thread.getElapsed() > -1) {
+			return String.format(ELAPSED_MASK, thread.getElapsed() / 1000);
 		} else {
 			return "N/A";
 		}

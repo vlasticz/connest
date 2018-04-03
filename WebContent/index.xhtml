@@ -93,7 +93,7 @@ You can also purchase a PSD-file for this template.
 					<p:outputPanel class="conn-item">
 						<h:outputText value="#{thread.getConn().toString()}"></h:outputText>						
 						<p:commandButton class="conn-item-right" value="Kill" action="#{mainBean.kill(thread)}" update="conn-list, info"></p:commandButton>
-						<h:outputText class="conn-item-right" value="#{mainBean.getLatency(thread)}"></h:outputText>
+						<h:outputText class="conn-item-right" value="#{mainBean.getElapsed(thread)} / #{mainBean.getLatency(thread)}"></h:outputText>
 					</p:outputPanel>
 					
 				</p:dataList>

@@ -17,14 +17,16 @@ public class ConnectionThread extends Thread{
 	private Thread currThread;
 	private Connection conn;
 	private long latency;
-	private StopWatch sw;
+	private StopWatch latencySW;
+	private StopWatch totalSW;
 	private boolean log = true; // Console logging turned off by default.
 	private boolean logDb = true; // Database logging turned on.
 		
 	// Constructor
 	public ConnectionThread() {
 		currThread = Thread.currentThread();
-		sw = new StopWatch();
+		latencySW = new StopWatch();
+		totalSW = new StopWatch();
 		
 		// Create connection if can be obtained and start thread
 		/*
@@ -44,15 +46,15 @@ public class ConnectionThread extends Thread{
 	 */
 	public void run() {
 		
-		// Starting without connection	
+		// Starting without connection
+		
+		totalSW.start();
 		
 		// Main loop start
 		while(!terminate) {				
 			
 			// Main sleep sequence
 	        try {
-	        	// Debug
-	        	System.out.println("Main sleep seq - connection: " + conn);
 	        	
 	        	if(conn != null) {
 	        		// If we got a connection
@@ -63,25 +65,25 @@ public class ConnectionThread extends Thread{
 			        
 			        // Latency measuring
 			        
-			        sw.start();
+			        latencySW.start();
 			        if(conn.isValid(VALIDATION_TIMEOUT)) {
-			        	sw.stop();
-			        	latency = sw.getTime();
-			        	sw.reset();
+			        	latencySW.stop();
+			        	latency = latencySW.getTime();
+			        	latencySW.reset();
 			        } else {
-			        	sw.stop();
-			        	sw.reset();
+			        	latencySW.stop();
+			        	latencySW.reset();
 			        	latency = -1;
 			        }
 		        }
 	        	
 	        	if(conn == null) {
-		        	// Create connection if can be obtained, if not, count - 1 and try again after sleep
+		        	// Create connection if can be obtained, if not, will wait until
+	        		// a connection is available or will timeout (maxWaitMilis) and quit.
 		        	
 		        	if((conn = Configuration.getNewConnection()) != null) {
 		    			if(log) System.out.println("Connection " + conn.toString() + " created");
-		    		
-		    		// Connecting times-out after JNDI maxWaitMilis 
+
 		    		} else {		    			
 		    			terminate = true;		    			    			
 		    		}
@@ -99,7 +101,10 @@ public class ConnectionThread extends Thread{
 	       		terminate = true;
 			}
 		}
-				
+		
+		// TODO: put into destroy() and create init()
+		totalSW.stop();
+		totalSW = null;
 		destroy();
 				
 		
@@ -177,6 +182,13 @@ public class ConnectionThread extends Thread{
 		} else {
 			return false;
 		}
+	}
+	
+	public long getElapsed() {
+		// May be null and asked for result both at exiting.
+		if(totalSW != null) {
+			return totalSW.getTime();
+		} else return -1;
 	}
 	
 }
