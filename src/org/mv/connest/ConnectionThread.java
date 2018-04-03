@@ -24,7 +24,7 @@ public class ConnectionThread extends Thread{
 		
 	// Constructor
 	public ConnectionThread() {
-		currThread = Thread.currentThread();
+		currThread = Thread.currentThread(); 
 		latencySW = new StopWatch();
 		totalSW = new StopWatch();
 		
@@ -167,7 +167,11 @@ public class ConnectionThread extends Thread{
 	}
 	
 	
-	// Getters
+	// Setters & Getters
+	public void setLogDb(Boolean log) {
+		logDb = log;
+	}
+	
 	public Connection getConn() {
 		return conn;
 	}

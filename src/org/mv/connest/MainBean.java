@@ -78,8 +78,10 @@ public class MainBean {
 	
 	// Cleanup stopped threads
 	public void cleanup() {
-		for(int i = threads.size() - 1; i > -1; i--) {
-			if(threads.get(i).isTerminated()) threads.remove(i);
+		if(threads != null) {
+			for(int i = threads.size() - 1; i > -1; i--) {
+				if(threads.get(i).isTerminated()) threads.remove(i);
+			}
 		}
 	}
 	
@@ -107,18 +109,24 @@ public class MainBean {
 		
 	}
 	
+	// Abandon all connections testing method.
+	public void abandonAll() {
+		for(ConnectionThread ct : threads) {
+			ct.setLogDb(false);
+		}
+		//threads = null;
+	}
+	
+	/*
+	private void stopLogDb(ConnectionThread thread) {
+		thread
+	}
+	*/
+	
 	
 	// Echo
 	public void echo(String msg) {
 		System.out.println(msg);		
-	}
-	
-	
-	// Cleanup
-	@PreDestroy
-	private void destroy() {
-		threads = null;
-		System.out.println("Exiting");
 	}
 	
 	
@@ -132,12 +140,12 @@ public class MainBean {
 	}
 	
 	// Get total elapsed time.
-	public String getElapsed(ConnectionThread thread) {
+	public String getElapsed(ConnectionThread thread) {		
 		if(thread.getElapsed() > -1) {
 			return String.format(ELAPSED_MASK, thread.getElapsed() / 1000);
 		} else {
 			return "N/A";
-		}
+		}		
 	}
 	
 	// Thread count.
@@ -150,11 +158,13 @@ public class MainBean {
 	// Connection count.
 	public int getConnectionsCount() throws SQLException {
 		int count = 0;
-		for(ConnectionThread thread : threads) {
-			
-			if(thread.getConn() != null) {
-				if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
-					count++;
+		if(threads != null) {
+			for(ConnectionThread thread : threads) {
+				
+				if(thread.getConn() != null) {
+					if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
+						count++;
+					}
 				}
 			}
 		}
@@ -170,10 +180,19 @@ public class MainBean {
 	public ArrayList<ConnectionThread> getThreads() {
 		return threads;
 	}
-	
+
+
 	public String getVersion () {
 		return Configuration.getVersion();
 	}
+	
+	
+	// Cleanup
+		@PreDestroy
+		private void destroy() {
+			threads = null;
+			System.out.println("Exiting");
+		}
 	
 	
 }
