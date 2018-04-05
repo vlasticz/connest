@@ -156,15 +156,17 @@ public class MainBean {
 	}
 	
 	// Connection count.
-	public int getConnectionsCount() throws SQLException {
+	public int getConnectionsCount() {
 		int count = 0;
 		if(threads != null) {
-			for(ConnectionThread thread : threads) {
-				
-				if(thread.getConn() != null) {
-					if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
+			for(ConnectionThread thread : threads) {				
+				try {
+					if(thread.getConn() != null && !thread.getConn().isClosed() &&
+							thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
 						count++;
 					}
+				} catch(SQLException sqle) {
+					sqle.printStackTrace();
 				}
 			}
 		}

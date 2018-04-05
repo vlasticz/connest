@@ -48,6 +48,7 @@ public class ConnectionThread extends Thread{
 		
 		// Starting without connection
 		
+		// Measuring elapsed time
 		totalSW.start();
 		
 		// Main loop start
@@ -55,26 +56,34 @@ public class ConnectionThread extends Thread{
 			
 			// Main sleep sequence
 	        try {
-	        	
+	        		        	
 	        	if(conn != null) {
-	        		// If we got a connection
+	        		if(!conn.isClosed()) {
+	        			//Debug
+	        			System.out.println(conn.getClass().toString());
+	        			
+	        			// If we got a connection
+		        		
+			        	Thread.sleep(5000);
+			        	if(log) System.out.println(currThread.toString() + " running");
+				        if(logDb) sendTimestamp("[RUNNING]");
+				        
+				        // Latency measuring
+				        
+				        latencySW.start();
+				        if(conn.isValid(VALIDATION_TIMEOUT)) {
+				        	latencySW.stop();
+				        	latency = latencySW.getTime();
+				        	latencySW.reset();
+				        } else {
+				        	latencySW.stop();
+				        	latencySW.reset();
+				        	latency = -1;
+				        }
+	        		} else {
+	        			terminate = true;
+	        		}
 	        		
-		        	Thread.sleep(5000);
-		        	if(log) System.out.println(currThread.toString() + " running");
-			        if(logDb) sendTimestamp("[RUNNING]");
-			        
-			        // Latency measuring
-			        
-			        latencySW.start();
-			        if(conn.isValid(VALIDATION_TIMEOUT)) {
-			        	latencySW.stop();
-			        	latency = latencySW.getTime();
-			        	latencySW.reset();
-			        } else {
-			        	latencySW.stop();
-			        	latencySW.reset();
-			        	latency = -1;
-			        }
 		        }
 	        	
 	        	if(conn == null) {
@@ -116,9 +125,11 @@ public class ConnectionThread extends Thread{
 				
 		// Close connection
 		try {					
-			if(conn != null) {				
-				if(logDb) sendTimestamp("[CLOSING]");
-				conn.close();
+			if(conn != null) {
+				if(!conn.isClosed()) {
+					if(logDb) sendTimestamp("[CLOSING]");
+					conn.close();
+				}
 				if(log) System.out.println("Connection " + conn.toString() + " closed.");
 			}
 						
