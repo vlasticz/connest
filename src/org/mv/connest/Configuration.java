@@ -41,35 +41,67 @@ public class Configuration {
 	private static Properties props;
 	
 	
-	public static Connection getNewConnection() {		
-		
-		// JDBC
-		if(getConnectionType().equals(JDBC)) {
-			try {
-				return DriverManager.getConnection(props.getProperty(URL_PROPERTY_NAME),
-						props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));			
+	private static String getDatasourceContext() {
+			
+		// Default values custom handled due to not relevant exceptions
+		// when context is defined as "datasource.context=<null>".
+		String context = "<none>";
+		if(props.getProperty(DATASOURCE_CONTEXT_PARAM) != null && 
+				!props.getProperty(DATASOURCE_CONTEXT_PARAM).equals("")) {
+			
+			context = String.format("%s", DATASOURCE_CONTEXT_BASE +
+					props.getProperty(DATASOURCE_CONTEXT_PARAM));			
+		}
+		return context;		
 				
-			// Can be anything here
-			} catch(Exception e) {
-				e.printStackTrace();		
-				return null;
-			}
-			
-		}
+	}
+
+
+	private static String getConfigPath() {		
+		return System.getProperty(CONF_PATH_PARAM, System.getProperty("user.home").toString() +
+				System.getProperty("file.separator") + "connest.properties");
+	}
+
+
+	private static String getConnectionType() {
+		// return System.getProperty(CONN_TYPE_PARAM, "JDBC");
+		if(props != null) {
+			return props.getProperty(CONN_TYPE_PARAM, "JDBC");
+		} else return null;
+	}
+
+
+	public static Connection getNewConnection() throws ConfigurationNotLoadedException {		
 		
-		// JNDI
-		if(getConnectionType().equals(JNDI)) {
-			try {
-				Context ctx = new InitialContext();
-			    DataSource ds = (DataSource)ctx.lookup(getDatasourceContext());
-			    return ds.getConnection();
-			    
-			} catch(Exception e) {
-				e.printStackTrace();
-				return null;
+		if(getConnectionType() != null) {
+			// JDBC		
+			if(getConnectionType().equals(JDBC)) {
+				try {
+					return DriverManager.getConnection(props.getProperty(URL_PROPERTY_NAME),
+							props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));			
+					
+				// Can be anything here
+				} catch(Exception e) {
+					e.printStackTrace();		
+					return null;
+				}
+				
 			}
 			
-		}
+			// JNDI
+			if(getConnectionType().equals(JNDI)) {
+				try {
+					Context ctx = new InitialContext();
+				    DataSource ds = (DataSource)ctx.lookup(getDatasourceContext());
+				    return ds.getConnection();
+				    
+				} catch(Exception e) {
+					e.printStackTrace();
+					return null;
+				}
+				
+			}
+		} else throw new ConfigurationNotLoadedException("Configuration is not loaded, cannot get connection.");
 
 		
 		// None of the above.
@@ -126,31 +158,6 @@ public class Configuration {
 	// Getters & setters
 	public static boolean isDebug() {
 		return Boolean.getBoolean(DEBUG_PARAM); // Works as System.getProperty		
-	}
-	
-	private static String getDatasourceContext() {
-			
-		// Default values custom handled due to not relevant exceptions
-		// when context is defined as "datasource.context=<null>".
-		String context = "<none>";
-		if(props.getProperty(DATASOURCE_CONTEXT_PARAM) != null && 
-				!props.getProperty(DATASOURCE_CONTEXT_PARAM).equals("")) {
-			
-			context = String.format("%s", DATASOURCE_CONTEXT_BASE +
-					props.getProperty(DATASOURCE_CONTEXT_PARAM));			
-		}
-		return context;		
-				
-	}
-	
-	private static String getConfigPath() {		
-		return System.getProperty(CONF_PATH_PARAM, System.getProperty("user.home").toString() +
-				System.getProperty("file.separator") + "connest.properties");
-	}
-	
-	private static String getConnectionType() {
-		// return System.getProperty(CONN_TYPE_PARAM, "JDBC");
-		return props.getProperty(CONN_TYPE_PARAM, "JDBC");
 	}
 	
 	public static String getVersion() {

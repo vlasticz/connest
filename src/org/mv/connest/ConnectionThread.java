@@ -101,7 +101,12 @@ public class ConnectionThread extends Thread{
 	        	
 		    // SQLException
 	        } catch(SQLException sqle) {
-	        	sqle.printStackTrace();	        	
+	        	sqle.printStackTrace();
+	        	
+	        // ConfigurationNotLoaded
+	        } catch(ConfigurationNotLoadedException cnle) {
+	        	cnle.printStackTrace();
+	        	terminate = true;
 	        	
 	        // Interruption
 	       	} catch(InterruptedException ie) {
