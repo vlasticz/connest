@@ -12,7 +12,7 @@ import javax.faces.bean.ManagedBean;
 @ApplicationScoped
 public class MainBean {
 				
-	private ArrayList<ConnectionThread> threads;	
+	private ArrayList<ConnectionThread> threads;
 	private int refreshRate;
 	
 	private final String LATENCY_MASK = "Latency: %dms";
@@ -30,7 +30,7 @@ public class MainBean {
 			cnfe.printStackTrace();
 		}
 		
-		loadConfiguration();		
+		loadConfiguration();
 		
 	}
 	
@@ -64,7 +64,7 @@ public class MainBean {
 		for(int i = 0; i < 10; i++) {
 			establishConnection();
 		}
-			
+
 	}
 	
 	public void establishConnection() {
@@ -126,7 +126,7 @@ public class MainBean {
 	
 	// Echo
 	public void echo(String msg) {
-		System.out.println(msg);		
+		System.out.println(msg);
 	}
 	
 	
@@ -138,18 +138,18 @@ public class MainBean {
 			return "N/A";
 		}
 	}
-	
+
 	// Get total elapsed time.
-	public String getElapsed(ConnectionThread thread) {		
+	public String getElapsed(ConnectionThread thread) {
 		if(thread.getElapsed() > -1) {
 			return String.format(ELAPSED_MASK, thread.getElapsed() / 1000);
 		} else {
 			return "N/A";
-		}		
+		}
 	}
-	
+
 	// Thread count.
-	public int getThreadsCount() {		
+	public int getThreadsCount() {
 		if(threads != null && threads.size() > -1) {
 			return threads.size();
 		} else return 0;
@@ -159,7 +159,7 @@ public class MainBean {
 	public int getConnectionsCount() {
 		int count = 0;
 		if(threads != null) {
-			for(ConnectionThread thread : threads) {				
+			for(ConnectionThread thread : threads) {
 				try {
 					if(thread.getConn() != null && !thread.getConn().isClosed() &&
 							thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
@@ -182,8 +182,8 @@ public class MainBean {
 	public ArrayList<ConnectionThread> getThreads() {
 		return threads;
 	}
-
-
+	
+	
 	public String getVersion () {
 		return Configuration.getVersion();
 	}

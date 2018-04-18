@@ -52,11 +52,11 @@ public class ConnectionThread extends Thread{
 		totalSW.start();
 		
 		// Main loop start
-		while(!terminate) {				
+		while(!terminate) {
 			
 			// Main sleep sequence
 	        try {
-	        		        	
+
 	        	if(conn != null) {
 	        		if(!conn.isClosed()) {
 	        			//Debug
@@ -93,8 +93,8 @@ public class ConnectionThread extends Thread{
 		        	if((conn = Configuration.getNewConnection()) != null) {
 		    			if(log) System.out.println("Connection " + conn.toString() + " created");
 
-		    		} else {		    			
-		    			terminate = true;		    			    			
+		    		} else {
+		    			terminate = true;
 		    		}
 		        	
 		        }
@@ -110,7 +110,7 @@ public class ConnectionThread extends Thread{
 	        	
 	        // Interruption
 	       	} catch(InterruptedException ie) {
-	       		if(log) System.out.println(currThread.toString() + " interrupted");		       		
+	       		if(log) System.out.println(currThread.toString() + " interrupted");
 	       		if(logDb && conn != null) sendTimestamp("[INTERRUPTED]");
 	       		terminate = true;
 			}
@@ -120,16 +120,16 @@ public class ConnectionThread extends Thread{
 		totalSW.stop();
 		totalSW = null;
 		destroy();
-				
+		
 		
     }
 	
 	
 	@PreDestroy	
 	public void destroy() {
-				
+	
 		// Close connection
-		try {					
+		try {
 			if(conn != null) {
 				if(!conn.isClosed()) {
 					if(logDb) sendTimestamp("[CLOSING]");
@@ -137,12 +137,12 @@ public class ConnectionThread extends Thread{
 				}
 				if(log) System.out.println("Connection " + conn.toString() + " closed.");
 			}
-						
+		
 		} catch(SQLException sqle) {
 			System.out.println(sqle.getMessage());
 		}
 		
-		finished = true;		
+		finished = true;
 	}
 	
 	
@@ -176,9 +176,9 @@ public class ConnectionThread extends Thread{
 			stmt.execute();
 			stmt.close();
 			
-		} catch(Exception e) {			
+		} catch(Exception e) {
 			e.printStackTrace();
-		}		
+		}
 		
 	}
 	

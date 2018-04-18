@@ -17,13 +17,13 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class Configuration {	
-		
+public class Configuration {
+	
 	private static final String VERSION = "0.1.11";
 	private static final String DATASOURCE_CONTEXT_BASE = "java:comp/env/";
 	
 	// Command line arguments
-	private static final String CONF_PATH_PARAM = "connest.config.path";	
+	private static final String CONF_PATH_PARAM = "connest.config.path";
 	private static final String DEBUG_PARAM = "connest.debug";
 	
 	// Properties file
@@ -50,14 +50,14 @@ public class Configuration {
 				!props.getProperty(DATASOURCE_CONTEXT_PARAM).equals("")) {
 			
 			context = String.format("%s", DATASOURCE_CONTEXT_BASE +
-					props.getProperty(DATASOURCE_CONTEXT_PARAM));			
+					props.getProperty(DATASOURCE_CONTEXT_PARAM));
 		}
-		return context;		
-				
+		return context;
+		
 	}
 
 
-	private static String getConfigPath() {		
+	private static String getConfigPath() {
 		return System.getProperty(CONF_PATH_PARAM, System.getProperty("user.home").toString() +
 				System.getProperty("file.separator") + "connest.properties");
 	}
@@ -71,18 +71,18 @@ public class Configuration {
 	}
 
 
-	public static Connection getNewConnection() throws ConfigurationNotLoadedException {		
+	public static Connection getNewConnection() throws ConfigurationNotLoadedException {
 		
 		if(getConnectionType() != null) {
 			// JDBC		
 			if(getConnectionType().equals(JDBC)) {
 				try {
 					return DriverManager.getConnection(props.getProperty(URL_PROPERTY_NAME),
-							props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));			
+							props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));
 					
 				// Can be anything here
 				} catch(Exception e) {
-					e.printStackTrace();		
+					e.printStackTrace();
 					return null;
 				}
 				
@@ -93,6 +93,8 @@ public class Configuration {
 				try {
 					Context ctx = new InitialContext();
 				    DataSource ds = (DataSource)ctx.lookup(getDatasourceContext());
+				    // Debug
+				    //System.out.println("testWhileIdle: " +  ds.get);
 				    return ds.getConnection();
 				    
 				} catch(Exception e) {
@@ -113,9 +115,9 @@ public class Configuration {
 			
 	public static void save() throws FileNotFoundException, IOException {
 		
-		Properties p = new Properties();		
-		p.setProperty("url", props.getProperty(URL_PROPERTY_NAME));		
-		p.setProperty("user", props.getProperty(USER_PROPERTY_NAME));		
+		Properties p = new Properties();
+		p.setProperty("url", props.getProperty(URL_PROPERTY_NAME));
+		p.setProperty("user", props.getProperty(USER_PROPERTY_NAME));
 		p.setProperty("pass", props.getProperty(PASS_PROPERTY_NAME));
 		
 		if(writeHeader) {
@@ -141,7 +143,7 @@ public class Configuration {
 	}
 		
 	
-	public static void printVMParams() {		
+	public static void printVMParams() {
 		// get a RuntimeMXBean reference
 		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
 
@@ -171,5 +173,5 @@ public class Configuration {
 	public static Properties getProperties() {
 		return props;
 	}
-		
+	
 }
