@@ -1,11 +1,15 @@
+:root {
+	--foreground-color: #343638
+}
+
 body {margin:0; background:url(images/body_bg.png); font-family:Arial, Helvetica, sans-serif;}
 
 #container {width:946px; margin:0 auto;}
 
 #header {height:102px;}
-#logo {float:left; padding:33px 0 0 33px; font-size:32px; font-family:"Comic Sans MS", cursive;}
-#logo a {color:#FFFFFF; text-decoration:none;}
-#slogan {float:right; color:#FFFFFF; font-size:16px; text-align:center; font-family:"Comic Sans MS", cursive; padding:33px 33px 0 0;}
+#logo {float:left; padding:33px 0 0 33px; font-size:32px; font-family:"Courier New", Courier;}
+#logo a {color:var(--foreground-color); text-decoration:none;}
+#time {float:right; color:var(--foreground-color); font-size:18px; text-align:center; font-family:"Courier New", Courier; padding:25px 10px 0 0;}
 
 #text {margin-right:250px;}
 #text_top {background:url(images/text_top.png) no-repeat; height:8px; font-size:1px;}

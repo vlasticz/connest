@@ -1,6 +1,8 @@
 package org.mv.connest;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
@@ -11,9 +13,13 @@ import javax.faces.bean.ManagedBean;
 @ManagedBean
 @ApplicationScoped
 public class MainBean {
-				
+	
 	private ArrayList<ConnectionThread> threads;
+	// Refresh rate of the main page.
 	private int refreshRate;
+	// Formatter for date and time on the main page
+	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");	
+	
 	
 	private final String LATENCY_MASK = "Latency: %dms";
 	private final String ELAPSED_MASK = "Elapsed: %ds";
@@ -114,15 +120,11 @@ public class MainBean {
 		for(ConnectionThread ct : threads) {
 			ct.setLogDb(false);
 		}
-		//threads = null;
 	}
 	
-	/*
-	private void stopLogDb(ConnectionThread thread) {
-		thread
-	}
-	*/
 	
+	
+	// Getters, setters and stuff
 	
 	// Echo
 	public void echo(String msg) {
@@ -138,7 +140,13 @@ public class MainBean {
 			return "N/A";
 		}
 	}
-
+	
+	
+	// Get local time
+	public String getLocalTime() {		
+		return dtf.format(LocalDateTime.now());		
+	}
+	
 	// Get total elapsed time.
 	public String getElapsed(ConnectionThread thread) {
 		if(thread.getElapsed() > -1) {
@@ -174,7 +182,6 @@ public class MainBean {
 	}
 	
 	
-	// Getters, setters and stuff
 	public int getRefreshRate() {
 		return refreshRate;
 	}

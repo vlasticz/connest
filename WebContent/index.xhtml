@@ -27,9 +27,11 @@ You can also purchase a PSD-file for this template.
 				<a href="#">Connest</a>
 			</div>
 
-			<div id="slogan">
-				Connest Server #{mainBean.getVersion()}
-			</div>
+			<h:form id="time">
+				<div id="time">
+					#{mainBean.getLocalTime()}
+				</div>
+			</h:form>
 
 		</div>
 		<!--end header -->
@@ -37,7 +39,7 @@ You can also purchase a PSD-file for this template.
 		
 		<!-- Refresh (update) timer -->
 		<h:form id="timer">
-			<p:poll interval="#{mainBean.refreshRate}" listener="#{mainBean.cleanup}" update="conn-list, info"></p:poll>
+			<p:poll interval="#{mainBean.refreshRate}" listener="#{mainBean.cleanup}" update="conn-list, info, time"></p:poll>
 			
 		</h:form>
 		
@@ -106,11 +108,11 @@ You can also purchase a PSD-file for this template.
 		<!-- end main -->
 		<!-- footer -->
 		<div id="footer">
-			&copy; Connest &nbsp;|&nbsp; 2018
+			<div style="color:#343638">&copy; Connest #{mainBean.getVersion()} &nbsp;|&nbsp; 2018</div>
 			<br />
 			<!-- Please do not change or delete this link. Read the license! Thanks. :-) -->
 			Design by <a href="http://www.onteethwhitening.com/">On Teeth
-				Whitening</a>.
+				Whitening</a>.				
 		</div>
 		<!-- end footer -->
 	</div>
