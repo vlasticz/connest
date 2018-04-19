@@ -17,14 +17,17 @@ public class ConnectionThread extends Thread{
 	private Thread currThread;
 	private Connection conn;
 	private long latency;
-	private StopWatch sw;
+	private StopWatch latencySW;
+	private StopWatch totalSW;
 	private boolean log = true; // Console logging turned off by default.
 	private boolean logDb = true; // Database logging turned on.
 		
 	// Constructor
 	public ConnectionThread() {
-		currThread = Thread.currentThread();
-		sw = new StopWatch();
+
+		currThread = Thread.currentThread(); 
+		latencySW = new StopWatch();
+		totalSW = new StopWatch();
 		
 	}
 	
@@ -34,43 +37,79 @@ public class ConnectionThread extends Thread{
 	 */
 	public void run() {
 		
-		// Could be terminating due to no db connection.
-		if(!terminate && logDb) sendTimestamp("[STARTED]");
+		// Starting without connection
 		
+		// Measuring elapsed time
+		totalSW.start();
 		
 		// Main loop start
-		while(!terminate) {						
+		while(!terminate) {				
 			
 			// Main sleep sequence
 	        try {
-	        	Thread.sleep(5000);
-	        	if(log) System.out.println(currThread.toString() + " running");
-		        if(logDb) sendTimestamp("[RUNNING]");
-		        
-		        // Latency measuring		        
-		        sw.start();
-		        if(conn.isValid(VALIDATION_TIMEOUT)) {
-		        	sw.stop();
-		        	latency = sw.getTime();
-		        	sw.reset();
-		        } else {
-		        	sw.stop();
-		        	sw.reset();
-		        	latency = -1;
+	        		        	
+	        	if(conn != null) {
+	        		if(!conn.isClosed()) {
+	        			//Debug
+	        			System.out.println(conn.getClass().toString());
+	        			
+	        			// If we got a connection
+		        		
+			        	Thread.sleep(5000);
+			        	if(log) System.out.println(currThread.toString() + " running");
+				        if(logDb) sendTimestamp("[RUNNING]");
+				        
+				        // Latency measuring
+				        
+				        latencySW.start();
+				        if(conn.isValid(VALIDATION_TIMEOUT)) {
+				        	latencySW.stop();
+				        	latency = latencySW.getTime();
+				        	latencySW.reset();
+				        } else {
+				        	latencySW.stop();
+				        	latencySW.reset();
+				        	latency = -1;
+				        }
+	        		} else {
+	        			terminate = true;
+	        		}
+	        		
+		        }
+	        	
+	        	if(conn == null) {
+		        	// Create connection if can be obtained, if not, will wait until
+	        		// a connection is available or will timeout (maxWaitMilis) and quit.
+		        	
+		        	if((conn = Configuration.getNewConnection()) != null) {
+		    			if(log) System.out.println("Connection " + conn.toString() + " created");
+
+		    		} else {		    			
+		    			terminate = true;		    			    			
+		    		}
+		        	
 		        }
 	        	
 		    // SQLException
 	        } catch(SQLException sqle) {
-	        	sqle.printStackTrace();	        	
+	        	sqle.printStackTrace();
+	        	
+	        // ConfigurationNotLoaded
+	        } catch(ConfigurationNotLoadedException cnle) {
+	        	cnle.printStackTrace();
+	        	terminate = true;
 	        	
 	        // Interruption
 	       	} catch(InterruptedException ie) {
 	       		if(log) System.out.println(currThread.toString() + " interrupted");		       		
-	       		if(logDb) sendTimestamp("[INTERRUPTED]");
+	       		if(logDb && conn != null) sendTimestamp("[INTERRUPTED]");
 	       		terminate = true;
-	        }
+			}
 		}
-				
+		
+		// TODO: put into destroy() and create init()
+		totalSW.stop();
+		totalSW = null;
 		destroy();
 				
 		
@@ -78,13 +117,15 @@ public class ConnectionThread extends Thread{
 	
 	
 	@PreDestroy	
-	public void destroy() {		
+	public void destroy() {
 				
 		// Close connection
 		try {					
-			if(conn != null) {				
-				if(logDb) sendTimestamp("[CLOSING]");
-				conn.close();
+			if(conn != null) {
+				if(!conn.isClosed()) {
+					if(logDb) sendTimestamp("[CLOSING]");
+					conn.close();
+				}
 				if(log) System.out.println("Connection " + conn.toString() + " closed.");
 			}
 						
@@ -133,10 +174,9 @@ public class ConnectionThread extends Thread{
 	}
 	
 	
-	// Getters
-	
+	// Setters & Getters
 	public void setLogDb(Boolean log) {
-		
+		logDb = log;
 	}
 	
 	public Connection getConn() {
@@ -155,4 +195,29 @@ public class ConnectionThread extends Thread{
 		}
 	}
 	
+	public long getElapsed() {
+		// May be null and asked for result both at exiting.
+		if(totalSW != null) {
+			return totalSW.getTime();
+		} else return -1;
+	}
+	
+}
+
+
+class ConnectionTimeoutException extends Exception
+{
+    /**
+	* 
+	*/
+	private static final long serialVersionUID = 1L;
+
+	// Parameterless Constructor
+    public ConnectionTimeoutException() {}
+
+    // Constructor that accepts a message
+    public ConnectionTimeoutException(String message)
+    {
+       super(message);
+    }
 }

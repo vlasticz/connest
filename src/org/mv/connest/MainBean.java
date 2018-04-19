@@ -1,6 +1,7 @@
 package org.mv.connest;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
@@ -14,8 +15,9 @@ import org.apache.commons.lang3.time.StopWatch;
 @ManagedBean
 @ApplicationScoped
 public class MainBean {
-				
-	private ArrayList<ConnectionThread> threads;	
+	
+	private ArrayList<ConnectionThread> threads;
+	// Refresh rate of the main page.
 	private int refreshRate;
 	// Formatter for date and time on the main page
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");	
@@ -23,6 +25,7 @@ public class MainBean {
 	private StopWatch sw1;
 	
 	private final String LATENCY_MASK = "Latency: %dms";
+	private final String ELAPSED_MASK = "Elapsed: %ds";
 	
 	
 	@PostConstruct
@@ -87,8 +90,10 @@ public class MainBean {
 	
 	// Cleanup stopped threads
 	public void cleanup() {
-		for(int i = threads.size() - 1; i > -1; i--) {
-			if(threads.get(i).isTerminated()) threads.remove(i);
+		if(threads != null) {
+			for(int i = threads.size() - 1; i > -1; i--) {
+				if(threads.get(i).isTerminated()) threads.remove(i);
+			}
 		}
 	}
 	
@@ -115,7 +120,6 @@ public class MainBean {
 		}
 		
 	}
-	
 	
 	// Abandon all connections testing method.
 	public void abandonAll() {
@@ -157,14 +161,6 @@ public class MainBean {
 	}
 	
 	
-	// Cleanup
-	@PreDestroy
-	private void destroy() {
-		threads = null;
-		System.out.println("Exiting");
-	}
-	
-	
 	// Get latency full string returned.
 	public String getLatency(ConnectionThread thread) {
 		if(thread.getLatency() > -1) {
@@ -172,6 +168,22 @@ public class MainBean {
 		} else {
 			return "N/A";
 		}
+	}
+	
+	
+	// Get locat time
+	public String getLocalTime() {		
+		return dtf.format(LocalDateTime.now());		
+	}
+	
+	
+	// Get total elapsed time.
+	public String getElapsed(ConnectionThread thread) {		
+		if(thread.getElapsed() > -1) {
+			return String.format(ELAPSED_MASK, thread.getElapsed() / 1000);
+		} else {
+			return "N/A";
+		}		
 	}
 	
 	// Thread count.
@@ -182,13 +194,17 @@ public class MainBean {
 	}
 	
 	// Connection count.
-	public int getConnectionsCount() throws SQLException {
+	public int getConnectionsCount() {
 		int count = 0;
-		for(ConnectionThread thread : threads) {
-			
-			if(thread.getConn() != null) {
-				if(thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
-					count++;
+		if(threads != null) {
+			for(ConnectionThread thread : threads) {				
+				try {
+					if(thread.getConn() != null && !thread.getConn().isClosed() &&
+							thread.getConn().isValid(ConnectionThread.VALIDATION_TIMEOUT)) {
+						count++;
+					}
+				} catch(SQLException sqle) {
+					sqle.printStackTrace();
 				}
 			}
 		}
@@ -196,7 +212,6 @@ public class MainBean {
 	}
 	
 	
-	// Getters, setters and stuff
 	public int getRefreshRate() {
 		return refreshRate;
 	}
@@ -204,10 +219,19 @@ public class MainBean {
 	public ArrayList<ConnectionThread> getThreads() {
 		return threads;
 	}
-	
+
+
 	public String getVersion () {
 		return Configuration.getVersion();
 	}
+	
+	
+	// Cleanup
+		@PreDestroy
+		private void destroy() {
+			threads = null;
+			System.out.println("Exiting");
+		}
 	
 	
 }
