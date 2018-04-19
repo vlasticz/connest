@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import org.apache.commons.lang3.time.StopWatch;
 
 @ManagedBean
 @ApplicationScoped
@@ -20,6 +21,8 @@ public class MainBean {
 	// Formatter for date and time on the main page
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");	
 	
+	private StopWatch sw1;
+	
 	
 	private final String LATENCY_MASK = "Latency: %dms";
 	private final String ELAPSED_MASK = "Elapsed: %ds";
@@ -29,7 +32,10 @@ public class MainBean {
 	private void init() {
 		threads = new ArrayList<>();
 		refreshRate = 1; // In seconds.
+		sw1 = new StopWatch();
+		
 		Configuration.printVMParams(); // Print start to console.
+		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch(ClassNotFoundException cnfe) {
@@ -122,6 +128,29 @@ public class MainBean {
 		}
 	}
 	
+	
+	// StopWatch operations
+	
+	public String getSW() {
+		return String.valueOf(sw1.getTime());
+	}
+	
+	public void startSW() {
+		if (sw1.isStarted()) {
+			sw1.resume();
+		} else {
+			sw1.start();
+		}
+	}
+	
+	public void stopSW() {
+		sw1.stop();
+	}
+	
+	public void clearSW() {
+		stopSW();
+		sw1.reset();
+	}
 	
 	
 	// Getters, setters and stuff

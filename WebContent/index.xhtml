@@ -64,7 +64,7 @@ You can also purchase a PSD-file for this template.
 				<div class="sidebar_top"></div>
 				<div class="sidebar_main">
 					<h3>Debug operations</h3>
-					<ul>					
+					<ul>
 						<li><p:commandButton class="button" value="Abandon All" action="#{mainBean.abandonAll()}"></p:commandButton></li>
 						<li><p:commandButton class="button" value="Load Configuration" action="#{mainBean.loadConfiguration()}"></p:commandButton></li>
 						<li><p:commandButton class="button" value="Save Configuration" action="#{mainBean.saveConfiguration()}"></p:commandButton></li>
@@ -72,17 +72,33 @@ You can also purchase a PSD-file for this template.
 				</div>
 				<div class="sidebar_bottom"></div>
 			</div>
-
+			
 			<!-- Info sidebar -->
 			<div class="sidebar_top"></div>
 			<h:form class="sidebar_main" id="info">
 				<h3>Info</h3>
 				<ul>
 					<li><h:outputText value="Active threads: #{mainBean.getThreadsCount()}"></h:outputText></li>
-					<li><h:outputText value="Active connections: #{mainBean.getConnectionsCount()}"></h:outputText></li>					
+					<li><h:outputText value="Active connections: #{mainBean.getConnectionsCount()}"></h:outputText></li>
 				</ul>
 			</h:form>
 			<div class="sidebar_bottom"></div>
+			
+			
+			<!-- StopWatch sidebar -->
+			<!--
+			 
+			<div class="sidebar_top"></div>
+			<h:form class="sidebar_main" id="stopwatch">
+				<h3>Stop Watch</h3>
+				<ul>
+					<li><h:outputText value="#{mainBean.getSW()}"></h:outputText></li>
+					
+				</ul>
+			</h:form>
+			<div class="sidebar_bottom"></div>
+			
+			 -->
 
 		</div>
 

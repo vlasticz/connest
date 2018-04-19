@@ -28,18 +28,8 @@ public class ConnectionThread extends Thread{
 		latencySW = new StopWatch();
 		totalSW = new StopWatch();
 		
-		// Create connection if can be obtained and start thread
-		/*
-		if((conn = Configuration.getNewConnection()) != null) {
-			if(log) System.out.println("Connection " + conn.toString() + " created");			
-		} else {			
-			terminate = true;
-			finished = true;
-		}
-		*/
-		
-	}	
-		
+	}
+	
 	
 	/**
 	 * 		RUN
