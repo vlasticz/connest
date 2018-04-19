@@ -26,16 +26,8 @@ public class ConnectionThread extends Thread{
 		currThread = Thread.currentThread();
 		sw = new StopWatch();
 		
-		// Create connection if can be obtained and start thread
-		if((conn = Configuration.getNewConnection()) != null) {
-			if(log) System.out.println("Connection " + conn.toString() + " created");			
-		} else {			
-			terminate = true;
-			finished = true;
-		}
-		
-	}	
-		
+	}
+	
 	
 	/**
 	 * 		RUN
@@ -142,6 +134,11 @@ public class ConnectionThread extends Thread{
 	
 	
 	// Getters
+	
+	public void setLogDb(Boolean log) {
+		
+	}
+	
 	public Connection getConn() {
 		return conn;
 	}

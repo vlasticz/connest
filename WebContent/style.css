@@ -1,11 +1,25 @@
+<<<<<<< Updated upstream
+=======
+:root {
+	--foreground-color: #343638;
+	--for-font: "Lucida Console", monospace;
+}
+
+>>>>>>> Stashed changes
 body {margin:0; background:url(images/body_bg.png); font-family:Arial, Helvetica, sans-serif;}
 
 #container {width:946px; margin:0 auto;}
 
 #header {height:102px;}
+<<<<<<< Updated upstream
 #logo {float:left; padding:33px 0 0 33px; font-size:32px; font-family:"Comic Sans MS", cursive;}
 #logo a {color:#FFFFFF; text-decoration:none;}
 #slogan {float:right; color:#FFFFFF; font-size:16px; text-align:center; font-family:"Comic Sans MS", cursive; padding:33px 33px 0 0;}
+=======
+#logo {float:left; padding:33px 0 0 33px; font-size:32px; font-family:var(--for-font);}
+#logo a {color:var(--foreground-color); text-decoration:none;}
+#time {float:right; color:var(--foreground-color); font-size:18px; text-align:center; font-family:var(--for-font); padding:25px 10px 0 0;}
+>>>>>>> Stashed changes
 
 #text {margin-right:250px;}
 #text_top {background:url(images/text_top.png) no-repeat; height:8px; font-size:1px;}
@@ -25,7 +39,7 @@ body {margin:0; background:url(images/body_bg.png); font-family:Arial, Helvetica
 .sidebar_top {background:url(images/sidebar_top.png) no-repeat; height:8px; font-size:1px;}
 .sidebar_main {background:url(images/sidebar_bg.png) repeat-y; padding:10px 24px 16px 24px;}
 .sidebar_bottom {background:url(images/sidebar_bottom.png) no-repeat; height:8px; font-size:1px; margin-bottom:4px;}
-#sidebar h3 {font-size:20px; font-weight:normal; margin:0 0 8px 0; color:#C4A980; font-family:Georgia, "Times New Roman", Times, serif; font-style:italic;}
+#sidebar h3 {font-size:18px; font-weight:normal; margin:0 0 10px 0; color:var(--foreground-color); font-family:var(--for-font);}
 #sidebar ul {margin:0px; padding:0px;}
 #sidebar li {list-style:none; padding:1px 0 1px 12px; background:url(images/li.png) 0px 8px no-repeat;}
 
