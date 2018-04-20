@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 public class Configuration {	
 		
-	private static final String VERSION = "0.1.11";
+	private static final String VERSION = "0.1.2";
 	private static final String DATASOURCE_CONTEXT_BASE = "java:comp/env/";
 	
 	// Command line arguments
