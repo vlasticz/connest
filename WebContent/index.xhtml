@@ -77,11 +77,12 @@ You can also purchase a PSD-file for this template.
 			
 			<!-- Info sidebar -->
 			<div class="sidebar_top"></div>
-			<h:form class="sidebar_main" id="info">
+			<h:form class="sidebar_main" id="info" style="word-break:break-all;">
 				<h3>Info</h3>
 				<ul>
 					<li><h:outputText value="Active threads: #{mainBean.getThreadsCount()}"></h:outputText></li>
 					<li><h:outputText value="Active connections: #{mainBean.getConnectionsCount()}"></h:outputText></li>
+					<li><h:outputText value="DataSource class: #{mainBean.getDataSourceClass()}"></h:outputText></li>
 				</ul>
 			</h:form>
 			<div class="sidebar_bottom"></div>

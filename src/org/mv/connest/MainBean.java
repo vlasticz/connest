@@ -154,6 +154,15 @@ public class MainBean {
 	
 	
 	// Getters, setters and stuff
+	public String getDataSourceClass() {
+		try {
+			return Configuration.getDataSourceClass();
+		} catch (ConfigurationNotLoadedException cnle) {
+			cnle.printStackTrace();
+			return cnle.getMessage();
+		}
+	}
+	
 	
 	// Echo
 	public void echo(String msg) {

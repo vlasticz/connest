@@ -71,18 +71,18 @@ public class Configuration {
 	}
 
 
-	public static Connection getNewConnection() throws ConfigurationNotLoadedException {		
+	public static Connection getNewConnection() throws ConfigurationNotLoadedException {
 		
 		if(getConnectionType() != null) {
 			// JDBC		
 			if(getConnectionType().equals(JDBC)) {
 				try {
 					return DriverManager.getConnection(props.getProperty(URL_PROPERTY_NAME),
-							props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));			
+							props.getProperty(USER_PROPERTY_NAME), props.getProperty(PASS_PROPERTY_NAME));
 					
 				// Can be anything here
 				} catch(Exception e) {
-					e.printStackTrace();		
+					e.printStackTrace();
 					return null;
 				}
 				
@@ -109,6 +109,35 @@ public class Configuration {
 		return null;
 		
 	}	
+	
+	
+	public static String getDataSourceClass() throws ConfigurationNotLoadedException{
+		if(getConnectionType() != null) {
+			// JDBC		
+			if(getConnectionType().equals(JDBC)) {
+				return "This method is implemented for JNDI datasource only.";
+			}
+			
+			// JNDI
+			if(getConnectionType().equals(JNDI)) {
+				try {
+					Context ctx = new InitialContext();
+				    DataSource ds = (DataSource)ctx.lookup(getDatasourceContext());
+				    return ds.getClass().toString();
+				    
+				} catch(Exception e) {
+					e.printStackTrace();
+					return null;
+				}
+				
+			}
+		} else throw new ConfigurationNotLoadedException("Configuration is not loaded, cannot get datasource class.");
+
+		
+		// None of the above.
+		System.out.println("Connection type not recognized.");
+		return null;
+	}
 	
 			
 	public static void save() throws FileNotFoundException, IOException {
